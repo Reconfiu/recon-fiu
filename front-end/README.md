@@ -3,6 +3,7 @@
 
 To run the project, navigate to the project folder using the terminal and type:
 
+### `npm install`
 ### `npm start`
 
 Runs the app in the development mode.<br>
