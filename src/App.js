@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import AppBar from 'material-ui/AppBar';
+import FlatButton from 'material-ui/FlatButton';
 import './App.css';
+import {Link} from "react-router";
 
 class App extends Component {
     constructor(props) {
@@ -16,7 +18,7 @@ class App extends Component {
             <div className="App">
                 <AppBar
                     title="Recon"
-                    iconClassNameRight="muidocs-icon-navigation-expand-more"
+                    iconElementRight={<Link to="login"><FlatButton label="Login" /></Link>}
                 />
                 <div>{this.props.children}</div>
             </div>
