@@ -9,7 +9,16 @@ export default class Login extends React.Component {
     }
 
     handleLoginClick() {
-        this.setState({isLoggedIn: true});
+        // fetch('localhost:5000/api/login',{
+        //     method: 'POST',
+        //     headers: new Headers({'Content-Type': 'application/json' }),
+        //     body: JSON.stringify({ user: { username:'joannier', password: '12345678' }}),
+        //     mode: 'cors'
+        // }).then(resp=>{
+        //     resp.json().then(_resp=>{
+        //         console.log(_resp)
+        //     })
+        // })
     }
 
     handleLogoutClick() {
