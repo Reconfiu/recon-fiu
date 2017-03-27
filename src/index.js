@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import App from './components/App/App';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import './index.css';
 import {Router, Route, browserHistory, IndexRedirect} from 'react-router';
