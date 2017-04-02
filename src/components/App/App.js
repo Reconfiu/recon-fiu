@@ -7,22 +7,21 @@ import {Link} from "react-router";
 import Sidenav from '../Sidenav/Sidenav';
 import {styles} from './styles';
 
-
 class App extends Component {
     constructor(props) {
         super(props);
         this.state = {open: true, docked: true};
+
         // Needed for onTouchTap
         injectTapEventPlugin();
     }
-
     render() {
         return (
             <div className="App">
                 <AppBar
                     style={{position: 'fixed'}} title="Recon"
                     onLeftIconButtonTouchTap={this.toggle.bind(this)}
-                    iconElementRight={<Link to="login"><FlatButton label="Login" /></Link>}
+                    iconElementRight={<Link to="login"><FlatButton label="Logout" /></Link>}
                 />
                 <Sidenav open={this.state.open} docked={this.state.docked} onToggle={this.toggle.bind(this)}/>
                 <div style={this.state.style}>{this.props.children}</div>
@@ -67,7 +66,6 @@ class App extends Component {
             {width: 'calc(100% - 40px)', marginLeft: 'initial'};
         return Object.assign(style, styles.root);
     }
-
 }
 
 export default App;

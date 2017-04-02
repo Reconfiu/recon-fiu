@@ -1,0 +1,19 @@
+
+.Login {
+    text-align: center;
+}
+.login-container{
+    margin-top: 100px;
+    margin-left: 50px;
+
+}
+
+.login-wrapper{
+    height: 100vh;
+    background-image: linear-gradient(rgba(120,120,120,.4),rgba(120,120,120,.4)), url('../../assets/images/Courses.jpg');
+    background-size: cover;
+}
+.login-text{
+    font-size: 15px;
+    text-align: center;
+}
