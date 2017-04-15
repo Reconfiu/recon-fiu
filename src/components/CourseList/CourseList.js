@@ -1,237 +1,194 @@
 import React from 'react';
+//import ReactDOM from 'react-dom';
+//import {Table, Column, Cell} from 'fixed-data-table';
 import {Card} from 'material-ui/Card';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
-import AutoComplete from 'material-ui/AutoComplete';
-import {Table, TableBody, TableFooter, TableHeader, TableHeaderColumn, TableRow, TableRowColumn} from 'material-ui/Table';
-import Toggle from 'material-ui/Toggle';
+import RaisedButton from 'material-ui/RaisedButton';
+import axios from 'axios';
+import {BASE_URL} from '../../shared/constants';
+
+import {
+    Table,
+    TableBody,
+    TableHeader,
+    TableHeaderColumn,
+    TableRow,
+    TableRowColumn
+} from 'material-ui/Table';
 import TextField from 'material-ui/TextField';
+import './CourseList.css';
 
-const styles = {
- propContainer: {
- width: 200,
- overflow: 'hidden',
- margin: '20px auto 0',
- },
- propToggleHeader: {
- margin: '20px auto 10px',
- },
- };
-
-const tableData = [
-    {
-        Department: 'CS',
-        Number: 'COP 2210',
-        Section: 'Fall'
-    },
-    {
-        Department: 'CS',
-        Number: 'CAP 3310',
-        Section: 'Spring'
-    },
-    {
-        Department: 'CS',
-        Number: 'COP 2210',
-        Section:'Summer'
-    },
-    {
-        Department: 'CS',
-        Number: 'CDA 2110',
-        Section: 'Fall'
-    },
-    {
-        Department: 'CS',
-        Number: 'ECS 3110',
-        Section: 'Summer'
-    },
-
-];
 export default class CourseList extends React.Component {
-
     constructor(props) {
         super(props);
-        this.state = {
-            selectFieldValue: null,
-            dataSource: [],
-            fixedHeader: true,
-            fixedFooter: true,
-            stripedRows: false,
-            showRowHover: false,
-            selectable: true,
-            multiSelectable: false,
-            enableSelectAll: false,
-            deselectOnClickaway: true,
-            showCheckboxes: true,
-            height: '300px'
+
+
+        this.styles = {
+            propContainer: {
+                width: 200,
+                overflow: 'hidden',
+                margin: '20px auto 0',
+            },
+            /*propToggleHeader: {
+             margin: '20px auto 10px',
+             },*/
         };
+
+        this.state = {
+            criteriaCourseNumber: 'ACG2021',
+            criteriaInstructorName: '',
+            criteriaTermName: 'Fall 2016',
+            data: [],
+            height: '300px',
+            tableDisplayed: false
+        };
+
+        this.populateSearch = this.populateSearch.bind(this);
+        this.courseNumberOnChange = this.courseNumberOnChange.bind(this);
+        this.instructorNameOnChange = this.instructorNameOnChange.bind(this);
+        this.termNameOnChange = this.termNameOnChange.bind(this);
     }
-    handleToggle = (event, toggled) => {
-        this.setState({
-            [event.target.name]: toggled,
-        });
-    };
 
-    handleChange1 = (event) => {
-        this.setState({height: event.target.value});
-    };
-
-    handleUpdateInput = (value) => {
-        this.setState({
-            dataSource: [
-                value,
-                value + value,
-                value + value + value,
-            ],
+    populateSearch() {
+        this.getData({
+            term: this.state.criteriaTermName,
+            course: this.state.criteriaCourseNumber,
+            prof: this.state.criteriaInstructorName
         });
-    };
+    }
+
+    /**
+     * Gets data from service and populate state
+     * @param query
+     */
+    getData(query) {
+        axios.post(`${BASE_URL}/api/searchby`, {query: query})
+            .then(resp => {
+                if (resp.data.data) {
+                    let result = [];
+                    for (let i = 0; i < resp.data.data.length; i++) {
+                        result.push(JSON.parse(resp.data.data[i]));
+                    }
+                    this.setState({data: result});
+                }
+            });
+    }
+
+
+    componentWillMount() {
+        this.getData({term: this.state.criteriaTermName, course: this.state.criteriaCourseNumber});
+    }
+
+    termNameOnChange(event, index, value) {
+        this.setState({criteriaTermName: value});
+    }
+
+    courseNumberOnChange(event) {
+        this.setState({criteriaCourseNumber: event.target.value});
+    }
+
+    instructorNameOnChange(event) {
+        this.setState({criteriaInstructorName: event.target.value});
+    }
+
+
+
+    /* handleChange1(event) {
+     this.setState({height: event.target.value1});
+     }*/
 
     render() {
-
         return (
             <Card>
-                <AutoComplete containerStyle
-                    hintText="Type anything"
-                    dataSource={this.state.dataSource}
-                    onUpdateInput={this.handleUpdateInput}
-                />
-                <AutoComplete containerStyle
-                    hintText="Type anything"
-                    dataSource={this.state.dataSource}
-                    onUpdateInput={this.handleUpdateInput}
-                />
-                <SelectField containerStyle
-                    value={this.state.selectFieldValue}
-                    onChange={this.handleChange.bind(this)}>
-                    <MenuItem value={1} primaryText="Fall"/>
-                    <MenuItem value={2} primaryText="Summer"/>
-                    <MenuItem value={3} primaryText="Spring"/>
-                </SelectField>
+                <form>
+                    <div>
+                        <TextField
+                            hintText="Ex. CEN4010"
+                            floatingLabelText="SEARCH BY COURSE NUMBER"
+                            floatingLabelFixed={true}
+                            value={this.state.criteriaCourseNumber}
+                            onChange={this.courseNumberOnChange}
+                        />
+                        <TextField
+                            hintText="Ex. Monique Ross"
+                            floatingLabelText="SEARCH BY PROFESSOR"
+                            floatingLabelFixed={true}
+                            value={this.state.criteriaInstructorName}
+                            onChange={this.instructorNameOnChange}
+                        />
+                        <SelectField
+                            floatingLabelText="SEARCH BY TERM"
+                            value={this.state.criteriaTermName}
+                            onChange={this.termNameOnChange}>
+                            <MenuItem value={"Fall 2016"} primaryText="Fall 2016"/>
+                            <MenuItem value={"Summer 2016"} primaryText="Summer 2016"/>
+                            <MenuItem value={"Spring 2016"} primaryText="Spring 2016"/>
+                            <MenuItem value={"Fall 2015"} primaryText="Fall 2015"/>
+                            <MenuItem value={"Summer 2015"} primaryText="Summer 2015"/>
+                            <MenuItem value={"Spring 2015"} primaryText="Spring 2015"/>
+                            <MenuItem value={"Fall 2014"} primaryText="Fall 2014"/>
+                            <MenuItem value={"Summer 2014"} primaryText="Summer 2014" />
+                            <MenuItem value={"Spring 2014"} primaryText="Spring 2014"/>
+                            <MenuItem value={"Fall 2013"} primaryText="Fall 2013"/>
+                            <MenuItem value={"Summer 2013"} primaryText="Summer 2013"/>
+                            <MenuItem value={"Spring 2013"} primaryText="Spring 2013"/>
+                            <MenuItem value={"Fall 2012"} primaryText="Fall 2012"/>
+                            <MenuItem value={"Summer 2012"} primaryText="Summer 2012"/>
+                            <MenuItem value={"Spring 2012"} primaryText="Spring 2012"/>
+                            <MenuItem value={"Fall 2011"} primaryText="Fall 2011"/>
+                            <MenuItem value={"Summer 2011"} primaryText="Summer 2011"/>
+                            <MenuItem value={"Spring 2011"} primaryText="Spring 2011"/>
+                            <MenuItem value={"Fall 2010"} primaryText="Fall 2010"/>
+                            <MenuItem value={"Summer 2010"} primaryText="Summer 2010"/>
+                            <MenuItem value={"Spring 2010"} primaryText="Spring 2010"/>
+                            <MenuItem value={"Fall 2009"} primaryText="Fall 2009"/>
+                            <MenuItem value={"Summer 2009"} primaryText="Summer 2009"/>
+                            <MenuItem value={"Spring 2009"} primaryText="Spring 2009"/>
+                            <MenuItem value={"Fall 2008"} primaryText="Fall 2008"/>
+                            <MenuItem value={"Summer 2008"} primaryText="Summer 2008"/>
+                            <MenuItem value={"Spring 2008"} primaryText="Spring 2008"/>
+                            <MenuItem value={"Fall 2007"} primaryText="Fall 2007"/>
+                            <MenuItem value={"Summer 2007"} primaryText="Summer 2007"/>
+                            <MenuItem value={"Spring 2007"} primaryText="Spring 2007"/>
+                            <MenuItem value={"Fall 2006"} primaryText="Fall 2006"/>
+                            <MenuItem value={"Summer 2006"} primaryText="Summer 2006"/>
+                            <MenuItem value={"Spring 2006"} primaryText="Spring 2006"/>
+                            <MenuItem value={"Fall 2005"} primaryText="Fall 2005"/>
+                            <MenuItem value={"Summer 2005"} primaryText="Summer 2005"/>
+                            <MenuItem value={"Spring 2005"} primaryText="Spring 2005"/>
+                            <MenuItem value={"Fall 2004"} primaryText="Fall 2004" />
+                            <MenuItem value={"Summer 2004"} primaryText="Summer 2004"/>
+                            <MenuItem value={"Spring 2004"} primaryText="Spring 2004"/>
+                            <MenuItem value={"Fall 2003"} primaryText="Fall 2003" />
+                        </SelectField>
+                    </div>
+                    <RaisedButton onClick={this.populateSearch} label="SEARCH" primary={true}/>
+                </form>
                 <div>
-                    <Table
-                        height={this.state.height}
-                        fixedHeader={this.state.fixedHeader}
-                        fixedFooter={this.state.fixedFooter}
-                        selectable={this.state.selectable}
-                        multiSelectable={this.state.multiSelectable}
-                    >
-                        <TableHeader
-                            displaySelectAll={this.state.showCheckboxes}
-                            adjustForCheckbox={this.state.showCheckboxes}
-                            enableSelectAll={this.state.enableSelectAll}
-                        >
+                    <Table height={this.state.height}>
+                        <TableHeader>
                             <TableRow>
-                                <TableHeaderColumn colSpan="3" tooltip="Super Header" style={{textAlign: 'center'}}>
-                                    Super Header
-                                </TableHeaderColumn>
-                            </TableRow>
-                            <TableRow>
-                                <TableHeaderColumn tooltip="The Department">Department</TableHeaderColumn>
-                                <TableHeaderColumn tooltip="The Number">Number</TableHeaderColumn>
-                                <TableHeaderColumn tooltip="The Section">Section</TableHeaderColumn>
+                                <TableHeaderColumn tooltip="Course Term">Term</TableHeaderColumn>
+                                <TableHeaderColumn tooltip="Course Number">Course</TableHeaderColumn>
+                                <TableHeaderColumn tooltip="Professor Name">Instructor</TableHeaderColumn>
                             </TableRow>
                         </TableHeader>
-                        <TableBody
-                            displayRowCheckbox={this.state.showCheckboxes}
-                            deselectOnClickaway={this.state.deselectOnClickaway}
-                            showRowHover={this.state.showRowHover}
-                            stripedRows={this.state.stripedRows}
-                        >
-                            {tableData.map( (row, index) => (
+                        <TableBody>
+                            {this.state.data.map((row, index) => (
                                 <TableRow key={index} selected={row.selected}>
-                                    <TableRowColumn>{row.Department}</TableRowColumn>
-                                    <TableRowColumn>{row.Number}</TableRowColumn>
-                                    <TableRowColumn>{row.Section}</TableRowColumn>
+                                    <TableRowColumn>{(row.term && row.term.term ) || "N/A"}</TableRowColumn>
+                                    <TableRowColumn>{(row.course && row.course.number ) || "N/A"}</TableRowColumn>
+                                    <TableRowColumn>{(row.instructor && row.instructor.name) || "N/A"}</TableRowColumn>
                                 </TableRow>
                             ))}
                         </TableBody>
-                        <TableFooter
-                            adjustForCheckbox={this.state.showCheckboxes}
-                        >
-                            <TableRow>
-                                <TableRowColumn>department</TableRowColumn>
-                                <TableRowColumn>number</TableRowColumn>
-                                <TableRowColumn>section</TableRowColumn>
-                            </TableRow>
-                            <TableRow>
-                                <TableRowColumn colSpan="3" style={{textAlign: 'center'}}>
-                                    Super Footer
-                                </TableRowColumn>
-                            </TableRow>
-                        </TableFooter>
                     </Table>
 
-                    <div style={styles.propContainer}>
-                        <h3>Table Properties</h3>
-                        <TextField
-                            floatingLabelText="Table Body Height"
-                            defaultValue={this.state.height}
-                            onChange={this.handleChange1}
-                        />
-                        <Toggle
-                            name="fixedHeader"
-                            label="Fixed Header"
-                            onToggle={this.handleToggle}
-                            defaultToggled={this.state.fixedHeader}
-                        />
-                        <Toggle
-                            name="fixedFooter"
-                            label="Fixed Footer"
-                            onToggle={this.handleToggle}
-                            defaultToggled={this.state.fixedFooter}
-                        />
-                        <Toggle
-                            name="selectable"
-                            label="Selectable"
-                            onToggle={this.handleToggle}
-                            defaultToggled={this.state.selectable}
-                        />
-                        <Toggle
-                            name="multiSelectable"
-                            label="Multi-Selectable"
-                            onToggle={this.handleToggle}
-                            defaultToggled={this.state.multiSelectable}
-                        />
-                        <Toggle
-                            name="enableSelectAll"
-                            label="Enable Select All"
-                            onToggle={this.handleToggle}
-                            defaultToggled={this.state.enableSelectAll}
-                        />
-                        <h3 style={styles.propToggleHeader}>TableBody Properties</h3>
-                        <Toggle
-                            name="deselectOnClickaway"
-                            label="Deselect On Clickaway"
-                            onToggle={this.handleToggle}
-                            defaultToggled={this.state.deselectOnClickaway}
-                        />
-                        <Toggle
-                            name="stripedRows"
-                            label="Stripe Rows"
-                            onToggle={this.handleToggle}
-                            defaultToggled={this.state.stripedRows}
-                        />
-                        <Toggle
-                            name="showRowHover"
-                            label="Show Row Hover"
-                            onToggle={this.handleToggle}
-                            defaultToggled={this.state.showRowHover}
-                        />
-                        <h3 style={styles.propToggleHeader}>Multiple Properties</h3>
-                        <Toggle
-                            name="showCheckboxes"
-                            label="Show Checkboxes"
-                            onToggle={this.handleToggle}
-                            defaultToggled={this.state.showCheckboxes}
-                        />
-                    </div>
                 </div>
             </Card>
-
-
         );
     }
 
-    handleChange(event, index, selectFieldValue) {
-        this.setState({selectFieldValue});
-    }
+
 }

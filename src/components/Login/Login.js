@@ -6,6 +6,9 @@ import './Login.css';
 import RaisedButton from 'material-ui/RaisedButton';
 import {Link} from "react-router";
 import FlatButton from 'material-ui/FlatButton';
+import {BASE_URL} from './../../shared/constants';
+import {browserHistory} from 'react-router';
+import axios from 'axios';
 
 export default class Login extends React.Component {
     constructor(props) {
@@ -15,7 +18,8 @@ export default class Login extends React.Component {
             loginPassword: '',
             signUpUsername: '',
             signUpPassword: '',
-            signUpActive: true
+            signUpActive: true,
+            error: null
         };
 
         this.handleSignUp = this.handleSignUp.bind(this);
@@ -37,10 +41,42 @@ export default class Login extends React.Component {
     }
 
     handleSignUp(event) {
+        axios.post(`${BASE_URL}/api/adduser`, {
+            "user": {
+                "username": this.state.signUpUsername,
+                "password": this.state.signUpPassword
+            }
+        })
+            .then(() => {
+                browserHistory.push('/courses');
+            });
+
+        /* fetch(`${BASE_URL}/api/adduser`, {
+         method: 'POST',
+         headers: new Headers({'Content-Type': 'application/json'}),
+         mode: 'no-cors',
+         body: JSON.stringify({
+         "user": {
+         "username": this.state.signUpUsername,
+         "password": this.state.signUpPassword
+         }
+         })
+         })
+         .then(() => {
+         browserHistory.push('/courses');
+         });*/
+
         console.log('A name was submitted: ' + this.state.signUpUsername);
         console.log('A password was submitted: ' + this.state.signUpPassword);
         event.preventDefault();
     }
+
+    handleLogin(event) {
+        console.log('A name was submitted: ' + this.state.loginUsername);
+        console.log('A password was submitted: ' + this.state.loginPassword);
+        event.preventDefault();
+    }
+
 
     signUpUsernameChange(event) {
         this.setState({
@@ -66,13 +102,6 @@ export default class Login extends React.Component {
         });
     }
 
-    handleLogin(event) {
-        console.log('A name was submitted: ' + this.state.signUpUsername);
-        console.log('A password was submitted: ' + this.state.signUpPassword);
-        console.log('A name was submitted: ' + this.state.loginUsername);
-        console.log('A password was submitted: ' + this.state.loginPassword);
-        event.preventDefault();
-    }
 
     render() {
         const wrapperStyle = {};
@@ -85,29 +114,6 @@ export default class Login extends React.Component {
                 <Drawer open={true} containerStyle={drawerStyle} openSecondary={true}>
                     {
                         this.state.signUpActive &&
-                        <form onSubmit={this.handleSignUp}>
-                            <div className="login-container">
-                                <TextField
-                                    hintText="Username/Email"
-                                    value={this.state.signUpUsername}
-                                    onChange={this.signUpUsernameChange}
-                                    errorText="This field is required"
-                                /><br />
-                                <TextField
-                                    hintText="Create a password"
-                                    value={this.state.signUpPassword}
-                                    onChange={this.signUpPasswordChange}
-                                    errorText="This field is required"
-                                /><br />
-                                <RaisedButton type="submit" label="SIGN UP" primary={true} style={buttonStyle}/>
-                                <div className="login-text" style={textStyle}>Already have an account?<FlatButton
-                                    label="login" primary={true}
-                                    onClick={this.toggleSignUpLogin}/></div>
-                            </div>
-                        </form>
-                    }
-                    {
-                        !this.state.signUpActive &&
                         <form onSubmit={this.handleLogin}>
                             <div className="login-container">
                                 <TextField
@@ -129,6 +135,33 @@ export default class Login extends React.Component {
                                     onClick={this.toggleSignUpLogin}/></div>
                             </div>
                         </form>
+
+                    }
+                    {
+                        !this.state.signUpActive &&
+                        <form onSubmit={this.handleSignUp}>
+                            <div className="login-container">
+                                <TextField
+                                    hintText="Username/Email"
+                                    value={this.state.signUpUsername}
+                                    onChange={this.signUpUsernameChange}
+                                    errorText="This field is required"
+                                /><br />
+                                <TextField
+                                    hintText="Create a password"
+                                    value={this.state.signUpPassword}
+                                    onChange={this.signUpPasswordChange}
+                                    errorText="This field is required"
+                                /><br />
+                                <RaisedButton type="submit" label="SIGN UP" primary={true} style={buttonStyle}/>
+                                <div className="login-text" style={textStyle}>Already have an account?<FlatButton
+                                    label="login" primary={true}
+                                    onClick={this.toggleSignUpLogin}/>
+                                </div>
+                                {this.state.error && <div style={{color: 'red'}}>{this.state.error}</div>}
+                            </div>
+                        </form>
+
                     }
 
                 </Drawer>
