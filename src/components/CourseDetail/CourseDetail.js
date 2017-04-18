@@ -1,46 +1,75 @@
 import React from 'react';
-import {Table, Column, Cell} from 'fixed-data-table';
+import {PieChart} from 'component-kit';
 
 export default class CourseDetail extends React.Component {
+    constructor(props) {
+        super(props);
+        this.courseData = window.courses[props.params.id];  //todo: remove window access when moving to redux
+        this.state = {
+            chartData: this.getChartData(),
+        };
 
+        this.getArrayAve = this.getArrayAve.bind(this);
+    }
+
+    getArrayAve(arrayX) {
+        let total = 0;
+        for (let i = 0; i < arrayX.length; i++) {
+            total += arrayX[i];
+        }
+        return total / arrayX.length;
+    }
+
+    getChartData() {
+        let [arrayE, arrayF, arrayG, arrayNR, arrayP, arrayVG] = [[], [], [], [], [], []];
+
+        for (let key in this.courseData.data) {
+            if (this.courseData.data.hasOwnProperty(key)) {
+                for (let childKey in this.courseData.data[key]) {
+                    if (!this.courseData.data[key].hasOwnProperty(childKey)) {
+                        break;
+                    }
+                    if (childKey === 'E') {
+                        arrayE.push(parseFloat(this.courseData.data[key][childKey].replace("%", "")));
+                    }
+                    else if (childKey === 'F') {
+                        arrayF.push(parseFloat(this.courseData.data[key][childKey].replace("%", "")))
+                    }
+                    else if (childKey === 'G') {
+                        arrayG.push(parseFloat(this.courseData.data[key][childKey].replace("%", "")))
+                    }
+                    else if (childKey === 'NR') {
+                        arrayNR.push(parseFloat(this.courseData.data[key][childKey].replace("%", "")))
+                    }
+                    else if (childKey === 'P') {
+                        arrayP.push(parseFloat(this.courseData.data[key][childKey].replace("%", "")))
+                    }
+                    else if (childKey === 'VG') {
+                        arrayVG.push(parseFloat(this.courseData.data[key][childKey].replace("%", "")))
+                    }
+                }
+            }
+        }
+
+        return [
+            {x: 'Excelent', y: this.getArrayAve(arrayE)},
+            {x: 'Jon', y: this.getArrayAve(arrayF)},
+            {x: 'David', y: this.getArrayAve(arrayG)},
+            {x: 'hola', y: this.getArrayAve(arrayNR)},
+            {x: 'Poor', y: this.getArrayAve(arrayP)},
+            {x: 'VeryGood', y: this.getArrayAve(arrayVG)},
+        ];
+    }
 
     render() {
-        const rows = [
-            ['a1', 'b1', 'c1'],
-            ['a2', 'b2', 'c2'],
-            ['a3', 'b3', 'c3']
-            // .... and more
-        ];
         return (
-          //  <div>CourseDetail</div>
-            <Table
-                rowHeight={50}
-                rowsCount={rows.length}
-                width={5000}
-                height={5000}
-                headerHeight={50}>
-                <Column
-                    header={<Cell>Col 1</Cell>}
-                    cell={<Cell>Column 1 static content</Cell>}
-                    width={2000}
-                />
-                <Column
-                    header={<Cell>Col 2</Cell>}
-                    cell={<Cell mySpecialProp="column2" />}
-                    width={1000}
-                />
-                <Column
-                    header={<Cell>Col 3</Cell>}
-                    cell={({rowIndex, ...props}) => (
-                        <Cell {...props}>
-                            Data for column 3: {rows[rowIndex][2]}
-                        </Cell>
-                    )}
-                    width={2000}
-                />
-            </Table>,
-                document.getElementById('example')
-        );
+            <PieChart
+                width={350}
+                height={600}
+                radius={150}
+                data={this.state.chartData}
+            />
+        )
     }
 }
 

@@ -1,12 +1,11 @@
 import React from 'react';
-//import ReactDOM from 'react-dom';
-//import {Table, Column, Cell} from 'fixed-data-table';
 import {Card} from 'material-ui/Card';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import axios from 'axios';
 import {BASE_URL} from '../../shared/constants';
+import {browserHistory} from 'react-router';
 
 import {
     Table,
@@ -41,13 +40,13 @@ export default class CourseList extends React.Component {
             criteriaTermName: 'Fall 2016',
             data: [],
             height: '300px',
-            tableDisplayed: false
         };
 
         this.populateSearch = this.populateSearch.bind(this);
         this.courseNumberOnChange = this.courseNumberOnChange.bind(this);
         this.instructorNameOnChange = this.instructorNameOnChange.bind(this);
         this.termNameOnChange = this.termNameOnChange.bind(this);
+        this.getCourseDetails = this.getCourseDetails.bind(this);
     }
 
     populateSearch() {
@@ -70,6 +69,7 @@ export default class CourseList extends React.Component {
                     for (let i = 0; i < resp.data.data.length; i++) {
                         result.push(JSON.parse(resp.data.data[i]));
                     }
+                    window.courses = result; //todo: remove window access when moving to redux
                     this.setState({data: result});
                 }
             });
@@ -92,13 +92,13 @@ export default class CourseList extends React.Component {
         this.setState({criteriaInstructorName: event.target.value});
     }
 
+    getCourseDetails(rowNumber) {
+        browserHistory.push('/courses/' + rowNumber);
+    }
 
-
-    /* handleChange1(event) {
-     this.setState({height: event.target.value1});
-     }*/
 
     render() {
+
         return (
             <Card>
                 <form>
@@ -128,7 +128,7 @@ export default class CourseList extends React.Component {
                             <MenuItem value={"Summer 2015"} primaryText="Summer 2015"/>
                             <MenuItem value={"Spring 2015"} primaryText="Spring 2015"/>
                             <MenuItem value={"Fall 2014"} primaryText="Fall 2014"/>
-                            <MenuItem value={"Summer 2014"} primaryText="Summer 2014" />
+                            <MenuItem value={"Summer 2014"} primaryText="Summer 2014"/>
                             <MenuItem value={"Spring 2014"} primaryText="Spring 2014"/>
                             <MenuItem value={"Fall 2013"} primaryText="Fall 2013"/>
                             <MenuItem value={"Summer 2013"} primaryText="Summer 2013"/>
@@ -157,34 +157,41 @@ export default class CourseList extends React.Component {
                             <MenuItem value={"Fall 2005"} primaryText="Fall 2005"/>
                             <MenuItem value={"Summer 2005"} primaryText="Summer 2005"/>
                             <MenuItem value={"Spring 2005"} primaryText="Spring 2005"/>
-                            <MenuItem value={"Fall 2004"} primaryText="Fall 2004" />
+                            <MenuItem value={"Fall 2004"} primaryText="Fall 2004"/>
                             <MenuItem value={"Summer 2004"} primaryText="Summer 2004"/>
                             <MenuItem value={"Spring 2004"} primaryText="Spring 2004"/>
-                            <MenuItem value={"Fall 2003"} primaryText="Fall 2003" />
+                            <MenuItem value={"Fall 2003"} primaryText="Fall 2003"/>
                         </SelectField>
                     </div>
                     <RaisedButton onClick={this.populateSearch} label="SEARCH" primary={true}/>
                 </form>
                 <div>
-                    <Table height={this.state.height}>
-                        <TableHeader>
+                    <Table height={this.state.height}
+                           onCellClick={(rowNumber) => this.getCourseDetails(rowNumber)}
+                    >
+                        <TableHeader
+                            adjustForCheckbox={false}
+                            displaySelectAll={false}
+                        >
                             <TableRow>
                                 <TableHeaderColumn tooltip="Course Term">Term</TableHeaderColumn>
                                 <TableHeaderColumn tooltip="Course Number">Course</TableHeaderColumn>
                                 <TableHeaderColumn tooltip="Professor Name">Instructor</TableHeaderColumn>
                             </TableRow>
                         </TableHeader>
-                        <TableBody>
+                        <TableBody
+                            displayRowCheckbox={false}
+                        >
                             {this.state.data.map((row, index) => (
                                 <TableRow key={index} selected={row.selected}>
                                     <TableRowColumn>{(row.term && row.term.term ) || "N/A"}</TableRowColumn>
                                     <TableRowColumn>{(row.course && row.course.number ) || "N/A"}</TableRowColumn>
                                     <TableRowColumn>{(row.instructor && row.instructor.name) || "N/A"}</TableRowColumn>
+
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
-
                 </div>
             </Card>
         );
