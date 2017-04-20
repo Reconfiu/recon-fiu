@@ -49,21 +49,6 @@ export default class Login extends React.Component {
                 browserHistory.push('/courses');
             });
 
-        /* fetch(`${BASE_URL}/api/adduser`, {
-         method: 'POST',
-         headers: new Headers({'Content-Type': 'application/json'}),
-         mode: 'no-cors',
-         body: JSON.stringify({
-         "user": {
-         "username": this.state.signUpUsername,
-         "password": this.state.signUpPassword
-         }
-         })
-         })
-         .then(() => {
-         browserHistory.push('/courses');
-         });*/
-
         console.log('A name was submitted: ' + this.state.signUpUsername);
         console.log('A password was submitted: ' + this.state.signUpPassword);
         event.preventDefault();
@@ -77,10 +62,10 @@ export default class Login extends React.Component {
             }
         })
             .then(({data}) => {
-                console.log(data)
+                console.log(data);
                 this.setState({
                     message: data.message
-                })
+                });
                 if (data.status === 200) {
                     console.log("ok")
                     browserHistory.push('/courses');
@@ -127,11 +112,11 @@ export default class Login extends React.Component {
         return (
             <div className="login-wrapper" style={wrapperStyle}>
                 <Drawer open={true} containerStyle={drawerStyle} openSecondary={true}>
-                    <h3>{this.state.message}</h3>
                     {
                         this.state.signUpActive &&
                         <form onSubmit={this.handleLogin}>
                             <div className="login-container">
+                                <h3>{this.state.message}</h3>
                                 <TextField
                                     hintText="Email"
                                     value={this.state.loginUsername}

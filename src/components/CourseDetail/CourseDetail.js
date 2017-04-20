@@ -12,7 +12,7 @@ import {BASE_URL} from '../../shared/constants';
 import CircularProgress from 'material-ui/CircularProgress';
 
 import Paper from 'material-ui/Paper';
-import {Card, CardActions, CardHeader, CardText} from 'material-ui/Card';
+import { CardHeader,} from 'material-ui/Card';
 
 export default class CourseDetail extends React.Component {
     constructor(props) {

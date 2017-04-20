@@ -6,6 +6,7 @@ import RaisedButton from 'material-ui/RaisedButton';
 import axios from 'axios';
 import {BASE_URL} from '../../shared/constants';
 import {browserHistory} from 'react-router';
+import CircularProgress from 'material-ui/CircularProgress';
 
 import {
     Table,
@@ -60,7 +61,7 @@ export default class CourseList extends React.Component {
      * @param query
      */
     getData(query) {
-
+        this.setState({loading: true});
         axios.post(`${BASE_URL}/api/searchby`, {query: query})
             .then(resp => {
                 if (resp.data.data) {
@@ -178,24 +179,27 @@ export default class CourseList extends React.Component {
                     </div>
                     <RaisedButton onClick={this.populateSearch} label="SEARCH" primary={true}/>
                 </form>
-                <Table height={this.state.height} onCellClick={(rowNumber) => this.getCourseDetails(rowNumber)}>
-                    <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
-                        <TableRow>
-                            <TableHeaderColumn tooltip="Course Term">Term</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="Course Number">Course</TableHeaderColumn>
-                            <TableHeaderColumn tooltip="Professor Name">Instructor</TableHeaderColumn>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody displayRowCheckbox={false}>
-                        {this.state.data.map((row, index) => (
-                            <TableRow key={index} selected={row.selected}>
-                                <TableRowColumn>{(row.term && row.term.term ) || "N/A"}</TableRowColumn>
-                                <TableRowColumn>{(row.course && row.course.number ) || "N/A"}</TableRowColumn>
-                                <TableRowColumn>{(row.instructor && row.instructor.name) || "N/A"}</TableRowColumn>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                {
+                    this.state.loading ? <CircularProgress /> : <Table
+                            height={this.state.height} onCellClick={(rowNumber) => this.getCourseDetails(rowNumber)}>
+                            <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
+                                <TableRow>
+                                    <TableHeaderColumn tooltip="Course Term">Term</TableHeaderColumn>
+                                    <TableHeaderColumn tooltip="Course Number">Course</TableHeaderColumn>
+                                    <TableHeaderColumn tooltip="Professor Name">Instructor</TableHeaderColumn>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody displayRowCheckbox={false}>
+                                {this.state.data.map((row, index) => (
+                                    <TableRow key={index} selected={row.selected}>
+                                        <TableRowColumn>{(row.term && row.term.term ) || "N/A"}</TableRowColumn>
+                                        <TableRowColumn>{(row.course && row.course.number ) || "N/A"}</TableRowColumn>
+                                        <TableRowColumn>{(row.instructor && row.instructor.name) || "N/A"}</TableRowColumn>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                }
             </Card>
         );
     }
