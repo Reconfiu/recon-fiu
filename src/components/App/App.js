@@ -1,5 +1,4 @@
 import React, {Component} from 'react';
-import injectTapEventPlugin from 'react-tap-event-plugin';
 import AppBar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton';
 import '../../App.css';
@@ -11,11 +10,7 @@ class App extends Component {
     constructor(props) {
         super(props);
         this.state = {open: true, docked: true};
-
-        // Needed for onTouchTap
-
     }
-
 
     toggle() {
         this.setState({open: !this.state.open});
@@ -26,7 +21,6 @@ class App extends Component {
      */
     componentDidMount() {
         this.updateSidenav(this.state.open);
-        injectTapEventPlugin();
         window.addEventListener("resize", this.updateSidenav.bind(this));
     }
     /**
