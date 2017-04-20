@@ -10,16 +10,11 @@ import TextField from 'material-ui/TextField';
 import './courseDetail.css';
 import {BASE_URL} from '../../shared/constants';
 import CircularProgress from 'material-ui/CircularProgress';
-
+import {browserHistory} from 'react-router';
 import Paper from 'material-ui/Paper';
 import { CardHeader,} from 'material-ui/Card';
 
-export default class CourseDetail extends React.Component {
-    constructor(props) {
-        super(props);
-
-        this.courseData = window.courses[props.params.id];  //todo: remove window access when moving to redux
-        const legend = {
+  const legend = {
             E: "Excellent",
             F: "Fair",
             G: "Good",
@@ -28,18 +23,32 @@ export default class CourseDetail extends React.Component {
             VG: "Very Good"
         };
 
-        let charData = _.mapValues(this.courseData.data, ((obj) => ({
-            chartName: obj.question,
-            data: _.map(obj, ((y, x) => ({x: legend[x], y: (y.replace("%", ""))}) ))
-        })));
-
-        this.state = {
+export default class CourseDetail extends React.Component {
+    constructor(props) {
+        super(props); 
+        let user = JSON.parse(window.localStorage.getItem("user")) 
+                    
+        if (!user || !window.courses)
+            browserHistory.push("/login")
+        else {
+            console.log(user)
+            let courseData = _.result(window, 'courses.'+this.props.params.id);  //todo: remove window access when moving to redux
+            let {comments} = courseData
+            let chartData = _.mapValues(courseData.data, ((obj) => ({
+                chartName: obj.question,
+                data: _.map(obj, ((y, x) => ({x: legend[x], y: (y.replace("%", ""))}) ))
+            })));
+            this.state = {
             open: false,
             loading: false,
-            chartData: charData,
+            chartData,
+            courseData,
             newCommentText: '',
-            comments: this.courseData.comments
-        };
+            user,
+            comments
+            };
+        }
+        
 
         this.getArrayAve = this.getArrayAve.bind(this);
         this.handleNewCommentTextChange = this.handleNewCommentTextChange.bind(this);
@@ -47,25 +56,37 @@ export default class CourseDetail extends React.Component {
         this.handleClose = this.handleClose.bind(this);
         this.handleOpen = this.handleOpen.bind(this);
     }
-
+    componetDidMount(){   
+        
+        console.log(this.state)
+        
+        
+    }
     handleNewCommentTextChange(event) {
         this.setState({newCommentText: event.target.value});
     }
 
     addComment() {
-        if(this.state.newCommentText) {
-            let comments = JSON.parse(JSON.stringify(this.state.comments));
+        let {courseData, newCommentText, user} = this.state
+        console.log(courseData._id)
+        if(newCommentText) {
+            let {comments} = this.state
             let comment = {
-                username:  JSON.parse(localStorage.getItem("user")),
-                body: this.state.newCommentText,
-                id: this.courseData._id
+                username: user.username ,
+                body: newCommentText,
+                id: _.result(courseData,'_id.$oid'),
+                token: user.token
             };
             this.setState({loading: true});
             axios.post(`${BASE_URL}/api/addcomment`, {comment})
-                .then(() => {
-                    comments.push(comment);
-                    this.setState({comments, newCommentText: '', loading: false});
-                    this.handleClose();
+                .then((resp) => {
+                    let {data}  = resp
+                    console.log(data)
+                    if (data.status === 200) {
+                        comments.push(comment);
+                        this.setState({comments, newCommentText: '', loading: false});
+                        this.handleClose();
+                    }
                 });
         }
     }
@@ -87,30 +108,33 @@ export default class CourseDetail extends React.Component {
     }
 
     render() {
+        let {courseData, chartData} = this.state
+        if (!courseData)
+            return null
         return (
             <Paper zDepth={2} className="course-detail-container row">
                 <div className="col-xs-12">
                     <div className="col-xs-6 course-info">
-                        <h3>{`${this.courseData.course.number || ''} - ${this.courseData.course.title || ''}`}</h3>
+                        <h3>{`${courseData.course.number || ''} - ${courseData.course.title || ''}`}</h3>
                         <Divider />
                         <div className="course-info-line">
                             <i>Number of enrolled students: </i>
-                            <b>{this.courseData.meta.enrolled || ''}</b>
+                            <b>{courseData.meta.enrolled || ''}</b>
                         </div>
                         <Divider />
                         <div className="course-info-line">
                             <i>Instructor name: </i>
-                            <b>{this.courseData.instructor.name || ''}</b>
+                            <b>{courseData.instructor.name || ''}</b>
                         </div>
                         <Divider />
                         <div className="course-info-line">
                             <i>Term:</i>
-                            <b>{this.courseData.term.term || ''}</b>
+                            <b>{courseData.term.term || ''}</b>
                         </div>
                         <Divider />
                     </div>
-                    {_.map(this.state.chartData, ({chartName, data}) => (
-                        <div className="col-xs-4">
+                    {_.map(chartData, ({chartName, data}) => (
+                        <div key={chartName} className="col-xs-4">
                             <CardHeader title={chartName}/>
                             <PieChart
                                 key={chartName}
@@ -124,10 +148,10 @@ export default class CourseDetail extends React.Component {
                     <h4>User Comments: </h4>
                     <Divider/>
                     {
-                        this.state.comments.map(commentObject => (
-                            <div className="comment">
+                        this.state.comments.map(({username, body, i}) => (
+                            <div key={i} className="comment">
                                 <div className="comment-text">
-                                    <span><b>{commentObject.username}</b> wrote: <i>"{commentObject.text}"</i></span>
+                                    <span><b>{username}</b> wrote: <i>"{body}"</i></span>
                                 </div>
                                 <Divider/>
                             </div>

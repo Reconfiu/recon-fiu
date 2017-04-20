@@ -3,7 +3,7 @@ import Drawer from 'material-ui/Drawer';
 import TextField from 'material-ui/TextField';
 import './Login.css';
 import RaisedButton from 'material-ui/RaisedButton';
-import {Link} from "react-router";
+// import {Link} from "react-router";
 import FlatButton from 'material-ui/FlatButton';
 import {BASE_URL} from './../../shared/constants';
 import {browserHistory} from 'react-router';
@@ -67,9 +67,8 @@ export default class Login extends React.Component {
                     message: data.message
                 });
                 if (data.status === 200) {
-                    console.log("ok")
-                    browserHistory.push('/courses');
                     window.localStorage.setItem("user", JSON.stringify(data.data))
+                    browserHistory.push('/courses');                    
                 }
             });
         console.log('A name was submitted: ' + this.state.loginUsername);

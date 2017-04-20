@@ -5,9 +5,9 @@ import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
 import axios from 'axios';
 import {BASE_URL} from '../../shared/constants';
-import {browserHistory} from 'react-router';
 import CircularProgress from 'material-ui/CircularProgress';
-
+import {browserHistory} from 'react-router';
+import _ from 'lodash'
 import {
     Table,
     TableBody,
@@ -22,7 +22,9 @@ import './CourseList.css';
 export default class CourseList extends React.Component {
     constructor(props) {
         super(props);
-
+        let user = JSON.parse(window.localStorage.getItem("user"));
+        if (!user)
+            browserHistory.push("/login");
 
         this.styles = {
             propContainer: {
@@ -39,6 +41,7 @@ export default class CourseList extends React.Component {
             data: [],
             loading: false,
             height: '300px',
+            user: user
         };
 
         this.populateSearch = this.populateSearch.bind(this);
@@ -62,27 +65,29 @@ export default class CourseList extends React.Component {
      */
     getData(query) {
         this.setState({loading: true});
-        axios.post(`${BASE_URL}/api/searchby`, {query: query})
+        let {user} = this.state
+        console.log(user)
+        
+        var body = { query: query, user: {  username: user.username }, token: user.token }
+        console.log(body)
+        axios.post(`${BASE_URL}/api/searchby`, body )
             .then(resp => {
-                if (resp.data.data) {
-                    let result = [];
+                let {data: {data, status}} = resp 
+                console.log(data)
+                if (status === 200) {
                     // Take first 50 records. Todo: add pagination
-                    for (let i = 0; i < resp.data.data.length && i < 50; i++) {
-                        result.push(JSON.parse(resp.data.data[i]));
-                    }
+                    let result = _.take(_.map(data, JSON.parse), 50)
                     window.courses = result; //todo: remove window access when moving to redux
                     this.setState({data: result, loading: false});
                 }
             });
     }
 
-    componentWillMount() {
-        let user = JSON.parse(window.localStorage.getItem("user"));
-        console.log(user);
-        if (!user)
-            browserHistory.push("/login");
-        else
-            this.getData({term: this.state.criteriaTermName, course: this.state.criteriaCourseNumber});
+    componentDidMount() {
+        let {criteriaTermName, criteriaCourseNumber} = this.state
+        window.setTimeout(()=>{
+            this.getData({term: criteriaTermName, course: criteriaCourseNumber});            
+        }, 20)
     }
 
     termNameOnChange(event, index, value) {
@@ -190,11 +195,11 @@ export default class CourseList extends React.Component {
                                 </TableRow>
                             </TableHeader>
                             <TableBody displayRowCheckbox={false}>
-                                {this.state.data.map((row, index) => (
-                                    <TableRow key={index} selected={row.selected}>
-                                        <TableRowColumn>{(row.term && row.term.term ) || "N/A"}</TableRowColumn>
-                                        <TableRowColumn>{(row.course && row.course.number ) || "N/A"}</TableRowColumn>
-                                        <TableRowColumn>{(row.instructor && row.instructor.name) || "N/A"}</TableRowColumn>
+                                {this.state.data.map(({term, course, instructor, selected}, index) => (
+                                    <TableRow key={index} selected={selected}>
+                                        <TableRowColumn>{(term && term.term ) || "N/A"}</TableRowColumn>
+                                        <TableRowColumn>{(course && course.number ) || "N/A"}</TableRowColumn>
+                                        <TableRowColumn>{(instructor && instructor.name) || "N/A"}</TableRowColumn>
                                     </TableRow>
                                 ))}
                             </TableBody>
