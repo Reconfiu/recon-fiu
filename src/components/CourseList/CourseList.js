@@ -28,10 +28,7 @@ export default class CourseList extends React.Component {
                 width: 200,
                 overflow: 'hidden',
                 margin: '20px auto 0',
-            },
-            /*propToggleHeader: {
-             margin: '20px auto 10px',
-             },*/
+            }
         };
 
         this.state = {
@@ -75,9 +72,13 @@ export default class CourseList extends React.Component {
             });
     }
 
-
     componentWillMount() {
-        this.getData({term: this.state.criteriaTermName, course: this.state.criteriaCourseNumber});
+        let user = JSON.parse(window.localStorage.getItem("user"));
+        console.log(user);
+        if (!user)
+            browserHistory.push("/login");
+        else
+            this.getData({term: this.state.criteriaTermName, course: this.state.criteriaCourseNumber});
     }
 
     termNameOnChange(event, index, value) {

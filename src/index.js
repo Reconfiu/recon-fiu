@@ -7,6 +7,7 @@ import {Router, Route, browserHistory, Redirect} from 'react-router';
 import CourseDetail from './components/CourseDetail/CourseDetail';
 import CourseList from './components/CourseList/CourseList';
 import Login from './components/Login/Login';
+import 'bootstrap/dist/css/bootstrap.css';
 
 const Root = () => (
     <MuiThemeProvider>

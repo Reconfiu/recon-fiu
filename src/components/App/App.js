@@ -13,21 +13,10 @@ class App extends Component {
         this.state = {open: true, docked: true};
 
         // Needed for onTouchTap
-        injectTapEventPlugin();
+
     }
-    render() {
-        return (
-            <div className="App">
-                <AppBar
-                    style={{position: 'fixed'}} title="Recon"
-                    onLeftIconButtonTouchTap={this.toggle.bind(this)}
-                    iconElementRight={<Link to="login"><FlatButton label="Logout" /></Link>}
-                />
-                <Sidenav open={this.state.open} docked={this.state.docked} onToggle={this.toggle.bind(this)}/>
-                <div style={this.state.style}>{this.props.children}</div>
-            </div>
-        );
-    }
+
+
     toggle() {
         this.setState({open: !this.state.open});
         this.updateSidenav(!this.state.open);
@@ -37,6 +26,7 @@ class App extends Component {
      */
     componentDidMount() {
         this.updateSidenav(this.state.open);
+        injectTapEventPlugin();
         window.addEventListener("resize", this.updateSidenav.bind(this));
     }
     /**
@@ -65,6 +55,25 @@ class App extends Component {
             {width: 'calc(100% - 296px)', marginLeft: '256px'} :
             {width: 'calc(100% - 40px)', marginLeft: 'initial'};
         return Object.assign(style, styles.root);
+    }
+
+    handleLogout(){
+        console.log("send logout request")
+        window.localStorage.clear()
+    }
+
+    render() {
+        return (
+            <div className="App">
+                <AppBar
+                    style={{position: 'fixed'}} title="Recon"
+                    onLeftIconButtonTouchTap={this.toggle.bind(this)}
+                    iconElementRight={<Link to="login"><FlatButton onClick={this.handleLogout} label="Logout" /></Link>}
+                />
+                <Sidenav open={this.state.open} docked={this.state.docked} onToggle={this.toggle.bind(this)}/>
+                <div style={this.state.style}>{this.props.children}</div>
+            </div>
+        );
     }
 }
 

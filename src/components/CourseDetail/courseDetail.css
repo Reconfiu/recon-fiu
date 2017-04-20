@@ -1,0 +1,25 @@
+.course-info {
+    text-align: left;
+    margin-top: 20px;
+    padding-right: 50px !important;
+}
+
+.course-info-line {
+    line-height: 40px;
+}
+
+.comment-container {
+    text-align: left;
+}
+
+.comment {
+
+}
+
+.comment-text {
+    margin: 15px;
+}
+
+.add-comment-btn {
+    padding: 20px 20px;
+}

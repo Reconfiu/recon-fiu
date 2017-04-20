@@ -1,5 +1,4 @@
 import React from 'react';
-import injectTapEventPlugin from 'react-tap-event-plugin';
 import Drawer from 'material-ui/Drawer';
 import TextField from 'material-ui/TextField';
 import './Login.css';
@@ -19,7 +18,7 @@ export default class Login extends React.Component {
             signUpUsername: '',
             signUpPassword: '',
             signUpActive: true,
-            error: null
+            message: ""
         };
 
         this.handleSignUp = this.handleSignUp.bind(this);
@@ -31,7 +30,6 @@ export default class Login extends React.Component {
         this.toggleSignUpLogin = this.toggleSignUpLogin.bind(this);
 
         // Needed for onTouchTap
-        injectTapEventPlugin();
     }
 
     toggleSignUpLogin() {
@@ -72,6 +70,23 @@ export default class Login extends React.Component {
     }
 
     handleLogin(event) {
+        axios.post(`${BASE_URL}/api/login`, {
+            "user": {
+                "username": this.state.loginUsername,
+                "password": this.state.loginPassword
+            }
+        })
+            .then(({data}) => {
+                console.log(data)
+                this.setState({
+                    message: data.message
+                })
+                if (data.status === 200) {
+                    console.log("ok")
+                    browserHistory.push('/courses');
+                    window.localStorage.setItem("user", JSON.stringify(data.data))
+                }
+            });
         console.log('A name was submitted: ' + this.state.loginUsername);
         console.log('A password was submitted: ' + this.state.loginPassword);
         event.preventDefault();
@@ -112,6 +127,7 @@ export default class Login extends React.Component {
         return (
             <div className="login-wrapper" style={wrapperStyle}>
                 <Drawer open={true} containerStyle={drawerStyle} openSecondary={true}>
+                    <h3>{this.state.message}</h3>
                     {
                         this.state.signUpActive &&
                         <form onSubmit={this.handleLogin}>
@@ -128,8 +144,8 @@ export default class Login extends React.Component {
                                     onChange={this.logInPasswordChange}
                                     errorText="This field is required"
                                 /><br />
-                                <Link to="courses"><RaisedButton label="LOGIN" primary={true}
-                                                                 style={buttonStyle}/></Link>
+                                <RaisedButton onClick={this.handleLogin} label="LOGIN" primary={true}
+                                                                                 style={buttonStyle}/>
                                 <div className="login-text" style={textStyle}>Don't have an account?<FlatButton
                                     label="Register" primary={true}
                                     onClick={this.toggleSignUpLogin}/></div>
