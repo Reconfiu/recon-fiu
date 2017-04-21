@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import AppBar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton';
 import '../../App.css';
+import { logout } from './../../shared/communications';
 import {Link} from "react-router";
 import Sidenav from '../Sidenav/Sidenav';
 import {styles} from './styles';
@@ -52,8 +53,14 @@ class App extends Component {
     }
 
     handleLogout(){
-        console.log("send logout request")
-        window.localStorage.clear()
+        logout.then((resp) => {
+            let { status } = resp
+            if (status === 201) {
+                window.localStorage.clear()                
+            }
+        }).catch(e=>{
+            console.log(e)
+        });
     }
 
     render() {

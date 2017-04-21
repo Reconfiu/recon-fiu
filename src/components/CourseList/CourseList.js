@@ -3,8 +3,7 @@ import {Card} from 'material-ui/Card';
 import SelectField from 'material-ui/SelectField';
 import MenuItem from 'material-ui/MenuItem';
 import RaisedButton from 'material-ui/RaisedButton';
-import axios from 'axios';
-import {BASE_URL} from '../../shared/constants';
+import { searchBy } from '../../shared/communications';
 import CircularProgress from 'material-ui/CircularProgress';
 import {browserHistory} from 'react-router';
 import _ from 'lodash'
@@ -65,25 +64,21 @@ export default class CourseList extends React.Component {
      */
     getData(query) {
         this.setState({loading: true});
-        let {user} = this.state
-        console.log(user)
-        
-        var body = { query: query, user: {  username: user.username }, token: user.token }
-        console.log(body)
-        axios.post(`${BASE_URL}/api/searchby`, body )
-            .then(resp => {
-                let {data: {data, status}} = resp 
-                console.log(resp)
-                if (status === 200) {
-                    // Take first 50 records. Todo: add pagination
-                    let result = _.take(_.map(data, JSON.parse), 50)
-                    window.courses = result; //todo: remove window access when moving to redux
-                    this.setState({data: result, loading: false});
-                }
-            });
+        searchBy(query).then(resp => {
+            let {data, status} = resp 
+            if (status === 200) {
+                // Take p-first 50 records. Todo: add pagination
+                let result = _.take(_.map(data, JSON.parse), 50)
+                window.courses = result; //todo: remove window access when moving to redux
+                window.localStorage.setItem("data", JSON.stringify(result))
+                this.setState({data: result, loading: false});
+            }
+        }).catch(e=>{
+            console.log(e)
+        });
     }
 
-    componentDidMount() {
+    componentWillMount() {
         let {criteriaTermName, criteriaCourseNumber} = this.state
         window.setTimeout(()=>{
             this.getData({term: criteriaTermName, course: criteriaCourseNumber});            
