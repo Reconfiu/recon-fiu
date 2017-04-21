@@ -15,8 +15,6 @@ export default class Login extends React.Component {
         this.state = {
             loginUsername: '',
             loginPassword: '',
-            signUpUsername: '',
-            signUpPassword: '',
             signUpActive: true,
             message: ""
         };
@@ -41,16 +39,23 @@ export default class Login extends React.Component {
     handleSignUp(event) {
         axios.post(`${BASE_URL}/api/adduser`, {
             "user": {
-                "username": this.state.signUpUsername,
-                "password": this.state.signUpPassword
+                "username": this.state.loginUsername,
+                "password": this.state.loginPassword
             }
         })
-            .then(() => {
-                browserHistory.push('/courses');
+            .then((resp) => {
+                console.log(resp)
+                let {data} = resp
+                this.setState({
+                    message: data.message
+                })
+                if (data.status === 201){
+                    this.setState({
+                        signUpActive: !this.state.signUpActive
+                    })
+                }
             });
 
-        console.log('A name was submitted: ' + this.state.signUpUsername);
-        console.log('A password was submitted: ' + this.state.signUpPassword);
         event.preventDefault();
     }
 
@@ -79,13 +84,13 @@ export default class Login extends React.Component {
 
     signUpUsernameChange(event) {
         this.setState({
-            signUpUsername: event.target.value
+            loginUsername: event.target.value
         });
     }
 
     signUpPasswordChange(event) {
         this.setState({
-            signUpPassword: event.target.value
+            loginPassword: event.target.value
         });
     }
 
@@ -115,7 +120,6 @@ export default class Login extends React.Component {
                         this.state.signUpActive &&
                         <form onSubmit={this.handleLogin}>
                             <div className="login-container">
-                                <h3>{this.state.message}</h3>
                                 <TextField
                                     hintText="Email"
                                     value={this.state.loginUsername}
@@ -132,7 +136,9 @@ export default class Login extends React.Component {
                                                                                  style={buttonStyle}/>
                                 <div className="login-text" style={textStyle}>Don't have an account?<FlatButton
                                     label="Register" primary={true}
-                                    onClick={this.toggleSignUpLogin}/></div>
+                                    onClick={this.toggleSignUpLogin}/>
+                                </div>
+                                <h4>{this.state.message}</h4>
                             </div>
                         </form>
 
@@ -143,13 +149,13 @@ export default class Login extends React.Component {
                             <div className="login-container">
                                 <TextField
                                     hintText="Username/Email"
-                                    value={this.state.signUpUsername}
+                                    value={this.state.loginUsername}
                                     onChange={this.signUpUsernameChange}
                                     errorText="This field is required"
                                 /><br />
                                 <TextField
                                     hintText="Create a password"
-                                    value={this.state.signUpPassword}
+                                    value={this.state.loginPassword}
                                     onChange={this.signUpPasswordChange}
                                     errorText="This field is required"
                                 /><br />
@@ -159,6 +165,7 @@ export default class Login extends React.Component {
                                     onClick={this.toggleSignUpLogin}/>
                                 </div>
                                 {this.state.error && <div style={{color: 'red'}}>{this.state.error}</div>}
+                                <h4>{this.state.message}</h4>                                
                             </div>
                         </form>
 

@@ -73,7 +73,7 @@ export default class CourseList extends React.Component {
         axios.post(`${BASE_URL}/api/searchby`, body )
             .then(resp => {
                 let {data: {data, status}} = resp 
-                console.log(data)
+                console.log(resp)
                 if (status === 200) {
                     // Take first 50 records. Todo: add pagination
                     let result = _.take(_.map(data, JSON.parse), 50)
