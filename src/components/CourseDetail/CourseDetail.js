@@ -35,7 +35,7 @@ export default class CourseDetail extends React.Component {
             let courses = window.courses || JSON.parse(window.localStorage.getItem('data'))
             console.log(courses)
             let courseData = _.result(courses, this.props.params.id) 
-            let { comments } = courseData
+            let comments  = courseData.comments || []
             let chartData = _.mapValues(courseData.data, ((obj) => ({
                 chartName: obj.question,
                 data: _.map(obj, ((y, x) => ({ x: legend[x], y: (y.replace('%', '')) })))
@@ -63,7 +63,7 @@ export default class CourseDetail extends React.Component {
         let courses = window.courses || JSON.parse(window.localStorage.getItem('data'))
         console.log(courses)
         let courseData = _.result(courses, _.get(this, 'props.params.id')) ;  //todo: remove window access when moving to redux
-        let { comments } = courseData
+        let comments = courseData.comments || []
         let chartData = _.mapValues(courseData.data, ((obj) => ({
             chartName: obj.question,
             data: _.map(obj, ((y, x) => ({ x: legend[x], y: (y.replace('%', '')) })))
