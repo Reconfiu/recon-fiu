@@ -29,7 +29,7 @@ export default class Login extends React.Component {
         
     }
     componentDidMount(){
-        let user = JSON.parse(window.localStorage.getItem('user'))
+        let user = JSON.parse(window.sessionStorage.getItem('user'))
         if (user)
             browserHistory.push('/courses')
 
@@ -66,7 +66,7 @@ export default class Login extends React.Component {
                 message
             });
             if (status === 200) {
-                window.localStorage.setItem('user', JSON.stringify(data))
+                window.sessionStorage.setItem('user', JSON.stringify(data))
                 browserHistory.push('/courses');
             }
         }).catch(e=>{

@@ -26,7 +26,7 @@ const legend = {
 export default class CourseDetail extends React.Component {
     constructor(props) {
         super(props);
-        let user = JSON.parse(window.localStorage.getItem('user'))
+        let user = JSON.parse(window.sessionStorage.getItem('user'))
 
         if (!user) {
             browserHistory.push('/login')

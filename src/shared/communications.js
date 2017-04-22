@@ -34,7 +34,7 @@ var signUp = (username, password) => {
 }
 
 var searchBy = (query) => {
-    let user = JSON.parse(window.localStorage.getItem("user"))
+    let user = JSON.parse(window.sessionStorage.getItem("user"))
     return r_promise({
         method: "POST",
         url: `${BASE_URL}/api/searchby`,        
@@ -50,8 +50,7 @@ var searchBy = (query) => {
 }
 
 var add_comment = ({body, id}) => {
-    let {username, token} = JSON.parse(window.localStorage.getItem("user"))
-    console.log({username, token, body, id})
+    let {username, token} = JSON.parse(window.sessionStorage.getItem("user"))
     return r_promise({
         method: "POST",
         url: `${BASE_URL}/api/addcomment`,        
@@ -71,9 +70,29 @@ var add_comment = ({body, id}) => {
     })
 }
 
+var logout = () => {
+    let {username, token} = JSON.parse(window.sessionStorage.getItem("user"))
+    return r_promise({
+        method: "POST",
+        url: `${BASE_URL}/api/logout`,        
+        headers: {
+            'cache-control': 'no-cache',
+            'content-type': 'application/json'
+        },
+        body: {
+            user: { 
+                username
+            },
+            token
+        },
+        json: true
+    })
+}
+
 export {
     login,
     signUp,
     searchBy,
-    add_comment
+    add_comment,
+    logout
 }

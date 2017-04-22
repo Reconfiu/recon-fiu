@@ -3,7 +3,7 @@ import AppBar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton';
 import '../../App.css';
 import { logout } from './../../shared/communications';
-import {Link} from "react-router";
+import {Link, browserHistory} from "react-router";
 import Sidenav from '../Sidenav/Sidenav';
 import {styles} from './styles';
 
@@ -53,10 +53,13 @@ class App extends Component {
     }
 
     handleLogout(){
-        logout.then((resp) => {
+        logout().then(resp => {
+            console.log(resp)
             let { status } = resp
-            if (status === 201) {
-                window.localStorage.clear()                
+            if (status === 200) {
+                window.sessionStorage.clear()   
+                window.localStorage.clear()
+                browserHistory.push("/login")             
             }
         }).catch(e=>{
             console.log(e)

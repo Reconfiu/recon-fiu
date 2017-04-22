@@ -21,7 +21,7 @@ import './CourseList.css';
 export default class CourseList extends React.Component {
     constructor(props) {
         super(props);
-        let user = JSON.parse(window.localStorage.getItem("user"));
+        let user = JSON.parse(window.sessionStorage.getItem("user"));
         if (!user)
             browserHistory.push("/login");
 
@@ -40,7 +40,7 @@ export default class CourseList extends React.Component {
             data: [],
             loading: false,
             height: '300px',
-            user: user
+            user
         };
 
         this.populateSearch = this.populateSearch.bind(this);
@@ -80,9 +80,13 @@ export default class CourseList extends React.Component {
 
     componentWillMount() {
         let {criteriaTermName, criteriaCourseNumber} = this.state
+       
+        
         window.setTimeout(()=>{
-            this.getData({term: criteriaTermName, course: criteriaCourseNumber});            
-        }, 20)
+            let user = JSON.parse(window.sessionStorage.getItem("user"))
+            if (user)
+                this.getData({term: criteriaTermName, course: criteriaCourseNumber});            
+        }, 800)
     }
 
     termNameOnChange(event, index, value) {
