@@ -6,13 +6,25 @@ import { logout } from './../../shared/communications';
 import {Link, browserHistory} from "react-router";
 import Sidenav from '../Sidenav/Sidenav';
 import {styles} from './styles';
+import _ from "lodash"
 
 class App extends Component {
     constructor(props) {
         super(props);
-        this.state = {open: true, docked: true};
+        
+        this.state = {open: true, docked: false, searchHistory:[], courseHistory: [] };
+        this.updateSearchHistory = this.updateSearchHistory.bind(this)   
+        this.updateCourseHistory = this.updateCourseHistory.bind(this)
+        this.getChildren = this.getChildren.bind(this)
     }
-
+    getChildren(){
+        let children  = _.clone(this.props.children)
+        let props = _.clone(children.props)
+        props.updateSearchHistory = this.updateSearchHistory
+        props.updateCourseHistory = this.updateCourseHistory
+        children.props = props
+        return children
+    }
     toggle() {
         this.setState({open: !this.state.open});
         this.updateSidenav(!this.state.open);
@@ -65,6 +77,26 @@ class App extends Component {
             console.log(e)
         });
     }
+    
+    updateSearchHistory(criteria){
+        let { searchHistory }= this.state
+        if (!_.find(searchHistory, criteria)){
+            searchHistory.push(criteria)
+            this.setState({
+                searchHistory
+            })
+        }
+    }
+
+    updateCourseHistory(course){
+        let { courseHistory } = this.state
+        if (!_.find(courseHistory, ({ _id: { $oid } }) =>  $oid === course._id.$oid  )) {
+            courseHistory.push(course)
+            this.setState({
+                courseHistory
+            })        
+        }
+    }
 
     render() {
         return (
@@ -74,8 +106,8 @@ class App extends Component {
                     onLeftIconButtonTouchTap={this.toggle.bind(this)}
                     iconElementRight={<Link to="login"><FlatButton onClick={this.handleLogout} labelStyle={{color:"#DDDDDD"}} label="Logout" /></Link>}
                 />
-                <Sidenav open={this.state.open} docked={this.state.docked} onToggle={this.toggle.bind(this)}/>
-                <div style={this.state.style}>{this.props.children}</div>
+                <Sidenav open={this.state.open} searchHistory={this.state.searchHistory} courseHistory={this.state.courseHistory} docked={this.state.docked} onToggle={this.toggle.bind(this)}/>
+                <div style={this.state.style}>{this.getChildren()}</div>
             </div>
         );
     }

@@ -30,12 +30,11 @@ export default class CourseDetail extends React.Component {
 
         if (!user) {
             browserHistory.push('/login')
-        } 
+        }
         else {
             let courses = window.courses || JSON.parse(window.localStorage.getItem('data'))
-            console.log(courses)
-            let courseData = _.result(courses, this.props.params.id) 
-            let comments  = courseData.comments || []
+            let courseData = _.result(courses, this.props.params.id)
+            let comments = courseData.comments || []
             let chartData = _.mapValues(courseData.data, ((obj) => ({
                 chartName: obj.question,
                 data: _.map(obj, ((y, x) => ({ x: legend[x], y: (y.replace('%', '')) })))
@@ -65,13 +64,13 @@ export default class CourseDetail extends React.Component {
     componentWillMount() {
         let courses = window.courses || JSON.parse(window.localStorage.getItem('data'))
         console.log(courses)
-        let courseData = _.result(courses, _.get(this, 'props.params.id')) ;  //todo: remove window access when moving to redux
+        let courseData = _.result(courses, _.get(this, 'props.params.id'));  //todo: remove window access when moving to redux
         let comments = courseData.comments || []
         let chartData = _.mapValues(courseData.data, ((obj) => ({
             chartName: obj.question,
             data: _.map(obj, ((y, x) => ({ x: legend[x], y: (y.replace('%', '')) })))
         })));
-        this.setState = ({
+        this.state = ({
             open: false,
             loading: false,
             chartData,
@@ -109,10 +108,12 @@ export default class CourseDetail extends React.Component {
     }
 
     handleOpen() {
+        console.log(this)
         this.setState({ open: true });
     }
 
     handleClose() {
+        console.log(this)        
         this.setState({ open: false });
     }
 
@@ -133,31 +134,31 @@ export default class CourseDetail extends React.Component {
             color: "#DDDDDD"
         };
         return (
-            <Paper style={{height:"90vh",margin:"0 0px 0px", overflowY: "scroll"}} zDepth={2} className='course-detail-container row'>
+            <Paper style={{ height: "90vh", margin: "0 0px 0px", overflowY: "scroll" }} zDepth={2} className='course-detail-container row'>
                 <div className='col-xs-12'>
-                    <div className='col-xs-6 course-info'>
+                    <div className='col-xs-8 course-info'>
                         <h3>{`${courseData.course.number || ''} - ${courseData.course.title || ''}`}</h3>
-                        <Divider />
-                        <div className='course-info-line'>
-                            <i>Number of enrolled students: </i>
-                            <b>{courseData.meta.enrolled || ''}</b>
-                        </div>
-                        <Divider />
+                        <Divider className="col-xs-4" />
                         <div className='course-info-line'>
                             <i>Instructor name: </i>
                             <b>{courseData.instructor.name || ''}</b>
                         </div>
-                        <Divider />
+                        <Divider className="col-xs-4" />
                         <div className='course-info-line'>
-                            <i>Term:</i>
+                            <i>Term: </i>
                             <b>{courseData.term.term || ''}</b>
                         </div>
-                        <Divider />
+                        <Divider className="col-xs-4" />
                         <div className='course-info-line'>
-                            <i>Section:</i>
+                            <i>Number of enrolled students: </i>
+                            <b>{courseData.meta.enrolled || ''}</b>
+                        </div>
+                        <Divider className="col-xs-4" />
+                        <div className='course-info-line'>
+                            <i>Section: </i>
                             <b>{courseData.course.section || ''}</b>
                         </div>
-                        <Divider />
+                        <Divider className="col-xs-4" />
                     </div>
                     {_.map(chartData, ({ chartName, data }) => (
                         <div key={chartName} className='col-xs-4'>

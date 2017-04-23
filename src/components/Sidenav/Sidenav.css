@@ -1,3 +1,7 @@
 .SidenavBar {
     opacity: .8;
 }
+
+.a-no-decor:hover{
+    text-decoration: none;
+}

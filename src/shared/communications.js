@@ -49,6 +49,17 @@ var searchBy = (query) => {
     })
 }
 
+var getSample = (size) => {
+      return r_promise({
+        method: "GET",
+        url: `${BASE_URL}/api/getall/${size}` ,        
+        headers: {
+            'cache-control': 'no-cache',
+            'content-type': 'application/json'
+        }
+    })
+} 
+
 var add_comment = ({body, id}) => {
     let {username, token} = JSON.parse(window.sessionStorage.getItem("user"))
     return r_promise({
@@ -94,5 +105,6 @@ export {
     signUp,
     searchBy,
     add_comment,
-    logout
+    logout,
+    getSample
 }

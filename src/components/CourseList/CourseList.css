@@ -10,3 +10,10 @@
     margin-right: 5px;
 }
 
+.mouse-hover:hover{
+    cursor: pointer;
+}
+
+.margin-top-xs {
+    margin-top: 5px;
+}

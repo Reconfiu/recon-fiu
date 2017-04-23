@@ -26,9 +26,9 @@ export default class Login extends React.Component {
         this.logInPasswordChange = this.logInPasswordChange.bind(this);
         this.toggleSignUpLogin = this.toggleSignUpLogin.bind(this);
 
-        
+
     }
-    componentDidMount(){
+    componentDidMount() {
         let user = JSON.parse(window.sessionStorage.getItem('user'))
         if (user)
             browserHistory.push('/courses')
@@ -41,7 +41,7 @@ export default class Login extends React.Component {
     }
 
     handleSignUp(event) {
-       signUp(this.state.loginUsername, this.state.loginPassword).then((resp) => {
+        signUp(this.state.loginUsername, this.state.loginPassword).then((resp) => {
             let { status, message } = resp
             this.setState({
                 message
@@ -51,7 +51,7 @@ export default class Login extends React.Component {
                     signUpActive: !this.state.signUpActive
                 })
             }
-        }).catch(e=>{
+        }).catch(e => {
             console.log(e)
         });
 
@@ -60,7 +60,7 @@ export default class Login extends React.Component {
 
     handleLogin(event) {
 
-       login(this.state.loginUsername, this.state.loginPassword).then((resp) => {
+        login(this.state.loginUsername, this.state.loginPassword).then((resp) => {
             console.log(resp);
             let { status, message, data } = resp
             this.setState({
@@ -70,8 +70,8 @@ export default class Login extends React.Component {
                 window.sessionStorage.setItem('user', JSON.stringify(data))
                 browserHistory.push('/courses');
             }
-        }).catch(e=>{
-            let {statusCode} = e
+        }).catch(e => {
+            let { statusCode } = e
             if (statusCode === 409)
                 browserHistory.push('/courses')
         });
@@ -106,7 +106,8 @@ export default class Login extends React.Component {
 
     render() {
         const buttonStyle = { margin: 30, width: 200 };
-        const textStyle = { color: "#DDDDDD"
+        const textStyle = {
+            color: "#DDDDDD"
         };
         const loginPane = {
             width: 400,
@@ -139,7 +140,7 @@ export default class Login extends React.Component {
                                     inputStyle={InputStyle}
                                     hintStyle={InputStyle}
                                     hintText='Password'
-                                    type = 'password'
+                                    type='password'
                                     value={this.state.loginPassword}
                                     onChange={this.logInPasswordChange}
                                     errorText='This field is required'
@@ -170,7 +171,7 @@ export default class Login extends React.Component {
                                 <TextField
                                     inputStyle={InputStyle}
                                     hintStyle={InputStyle}
-                                    type = "password"
+                                    type="password"
                                     hintText='Create a password'
                                     value={this.state.loginPassword}
                                     onChange={this.signUpPasswordChange}
