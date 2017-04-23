@@ -3,7 +3,7 @@ import { BASE_URL } from './constants'
 var r_promise = promise.defaults({ jar: true })
 
 
-var login = (username, password) => {
+let login = (username, password) => {
     return r_promise({
         method: 'POST',
         url: `${BASE_URL}/api/login`,
@@ -16,9 +16,9 @@ var login = (username, password) => {
         },
         json: true
     })
-}
+};
 
-var signUp = (username, password) => {
+let signUp = (username, password) => {
     return r_promise({
         method: "POST",
         url: `${BASE_URL}/api/adduser`,
@@ -74,13 +74,13 @@ var logout = () => {
     let {username, token} = JSON.parse(window.sessionStorage.getItem("user"))
     return r_promise({
         method: "POST",
-        url: `${BASE_URL}/api/logout`,        
+        url: `${BASE_URL}/api/logout`,
         headers: {
             'cache-control': 'no-cache',
             'content-type': 'application/json'
         },
         body: {
-            user: { 
+            user: {
                 username
             },
             token

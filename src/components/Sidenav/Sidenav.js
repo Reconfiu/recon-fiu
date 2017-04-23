@@ -15,6 +15,7 @@ class Sidenav extends React.Component {
                 onRequestChange={(open) => this.setState({open})}>
                 <AppBar
                     className={'SidenavBar'} title="Recon"
+                    style={{backgroundColor: "#081E3F"}}
                     iconElementLeft={<IconButton><NavigationClose /></IconButton>}
                     onLeftIconButtonTouchTap={this.props.onToggle}
                 />

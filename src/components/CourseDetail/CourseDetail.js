@@ -47,7 +47,10 @@ export default class CourseDetail extends React.Component {
                 courseData,
                 newCommentText: '',
                 user,
-                comments
+                comments,
+                height: '68vh',
+                overflow: "scroll",
+                margin: "20px auto 0"
             };
         }
 
@@ -59,7 +62,7 @@ export default class CourseDetail extends React.Component {
         this.handleClose = this.handleClose.bind(this);
         this.handleOpen = this.handleOpen.bind(this);
     }
-    componetWillMount() {
+    componentWillMount() {
         let courses = window.courses || JSON.parse(window.localStorage.getItem('data'))
         console.log(courses)
         let courseData = _.result(courses, _.get(this, 'props.params.id')) ;  //todo: remove window access when moving to redux
@@ -125,8 +128,12 @@ export default class CourseDetail extends React.Component {
         let { courseData, chartData } = this.state
         if (!courseData)
             return null
+        const LoginButton = {
+            backgroundColor: "#B6862C",
+            color: "#DDDDDD"
+        };
         return (
-            <Paper zDepth={2} className='course-detail-container row'>
+            <Paper style={{height:"90vh",margin:"0 0px 0px", overflowY: "scroll"}} zDepth={2} className='course-detail-container row'>
                 <div className='col-xs-12'>
                     <div className='col-xs-6 course-info'>
                         <h3>{`${courseData.course.number || ''} - ${courseData.course.title || ''}`}</h3>
@@ -144,6 +151,11 @@ export default class CourseDetail extends React.Component {
                         <div className='course-info-line'>
                             <i>Term:</i>
                             <b>{courseData.term.term || ''}</b>
+                        </div>
+                        <Divider />
+                        <div className='course-info-line'>
+                            <i>Section:</i>
+                            <b>{courseData.course.section || ''}</b>
                         </div>
                         <Divider />
                     </div>
@@ -173,13 +185,13 @@ export default class CourseDetail extends React.Component {
                     }
                 </div>
                 <div className='pull-right add-comment-btn'>
-                    <RaisedButton label='Add Comment' primary={true} onTouchTap={this.handleOpen} />
+                    <RaisedButton buttonStyle={LoginButton} label='Add Comment' primary={true} onTouchTap={this.handleOpen} />
                 </div>
                 <Dialog
                     title='Add Comment'
                     actions={[
-                        <FlatButton label='Cancel' onTouchTap={this.handleClose} />,
-                        <FlatButton label='Submit' primary={true} keyboardFocused={true} onTouchTap={this.addComment} />,
+                        <FlatButton buttonStyle={LoginButton} label='Cancel' onTouchTap={this.handleClose} />,
+                        <FlatButton buttonStyle={LoginButton} label='Submit' primary={true} keyboardFocused={true} onTouchTap={this.addComment} />,
                     ]}
                     modal={false}
                     open={this.state.open}

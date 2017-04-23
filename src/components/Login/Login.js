@@ -59,6 +59,7 @@ export default class Login extends React.Component {
     }
 
     handleLogin(event) {
+
        login(this.state.loginUsername, this.state.loginPassword).then((resp) => {
             console.log(resp);
             let { status, message, data } = resp
@@ -104,33 +105,48 @@ export default class Login extends React.Component {
 
 
     render() {
-        const wrapperStyle = {};
-        const drawerStyle = { width: 400 };
         const buttonStyle = { margin: 30, width: 200 };
-        const textStyle = {};
-
+        const textStyle = { color: "#DDDDDD"
+        };
+        const loginPane = {
+            width: 400,
+            backgroundColor: "#081E3F",
+            color: "#DDDDDD"
+        };
+        const LoginButton = {
+            backgroundColor: "#B6862C",
+            color: "#DDDDDD"
+        };
+        const InputStyle = {
+            color: "#DDDDDD"
+        };
         return (
-            <div className='login-wrapper' style={wrapperStyle}>
-                <Drawer open={true} containerStyle={drawerStyle} openSecondary={true}>
+            <div className='login-wrapper' >
+                <Drawer open={true} containerStyle={loginPane} openSecondary={true}>
                     {
                         this.state.signUpActive &&
                         <form onSubmit={this.handleLogin}>
                             <div className='login-container'>
                                 <TextField
+                                    inputStyle={InputStyle}
+                                    hintStyle={InputStyle}
                                     hintText='Email'
                                     value={this.state.loginUsername}
                                     onChange={this.logInUsernameChange}
                                     errorText='This field is required'
                                 /><br />
                                 <TextField
+                                    inputStyle={InputStyle}
+                                    hintStyle={InputStyle}
                                     hintText='Password'
+                                    type = 'password'
                                     value={this.state.loginPassword}
                                     onChange={this.logInPasswordChange}
                                     errorText='This field is required'
                                 /><br />
-                                <RaisedButton onClick={this.handleLogin} label='LOGIN' primary={true}
+                                <RaisedButton onClick={this.handleLogin} buttonStyle={LoginButton} label='LOGIN' primary={true}
                                     style={buttonStyle} />
-                                <div className='login-text' style={textStyle}>Don't have an account?<FlatButton
+                                <div className='login-text' labelStyle={textStyle}>Don't have an account?<FlatButton
                                     label='Register' primary={true}
                                     onClick={this.toggleSignUpLogin} />
                                 </div>
@@ -144,19 +160,24 @@ export default class Login extends React.Component {
                         <form onSubmit={this.handleSignUp}>
                             <div className='login-container'>
                                 <TextField
+                                    inputStyle={InputStyle}
+                                    hintStyle={InputStyle}
                                     hintText='Username/Email'
                                     value={this.state.loginUsername}
                                     onChange={this.signUpUsernameChange}
                                     errorText='This field is required'
                                 /><br />
                                 <TextField
+                                    inputStyle={InputStyle}
+                                    hintStyle={InputStyle}
+                                    type = "password"
                                     hintText='Create a password'
                                     value={this.state.loginPassword}
                                     onChange={this.signUpPasswordChange}
                                     errorText='This field is required'
                                 /><br />
-                                <RaisedButton type='submit' label='SIGN UP' primary={true} style={buttonStyle} />
-                                <div className='login-text' style={textStyle}>Already have an account?<FlatButton
+                                <RaisedButton type='submit' label='SIGN UP' buttonStyle={LoginButton} primary={true} style={buttonStyle} />
+                                <div className='login-text' labelStyle={textStyle}>Already have an account?<FlatButton
                                     label='login' primary={true}
                                     onClick={this.toggleSignUpLogin} />
                                 </div>

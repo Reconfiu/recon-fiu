@@ -29,7 +29,7 @@ export default class CourseList extends React.Component {
             propContainer: {
                 width: 200,
                 overflow: 'hidden',
-                margin: '20px auto 0',
+                margin: '20px auto 0'
             }
         };
 
@@ -39,7 +39,8 @@ export default class CourseList extends React.Component {
             criteriaTermName: 'Fall 2016',
             data: [],
             loading: false,
-            height: '300px',
+            height: '68vh',
+            overflow: "scroll",
             user
         };
 
@@ -108,9 +109,14 @@ export default class CourseList extends React.Component {
 
     render() {
         const containerStyle = {
-            height: '100%'
+            height: '100%',
+            width: '100%'
         };
 
+        const LoginButton = {
+            backgroundColor: "#B6862C",
+            color: "#DDDDDD"
+        };
         return (
             <Card style={containerStyle}>
                 <form className="row">
@@ -181,19 +187,19 @@ export default class CourseList extends React.Component {
                             </SelectField>
                         </div>
                     </div>
-                    <RaisedButton onClick={this.populateSearch} label="SEARCH" primary={true}/>
+                    <RaisedButton buttonStyle={LoginButton} onClick={this.populateSearch} label="SEARCH" primary={true}/>
                 </form>
                 {
                     this.state.loading ? <CircularProgress /> : <Table
-                            height={this.state.height} onCellClick={(rowNumber) => this.getCourseDetails(rowNumber)}>
+                            height={this.state.height} style ={{width: "90%",margin: "0 auto"}} onCellClick={(rowNumber) => this.getCourseDetails(rowNumber)}>
                             <TableHeader adjustForCheckbox={false} displaySelectAll={false}>
-                                <TableRow>
-                                    <TableHeaderColumn tooltip="Course Term">Term</TableHeaderColumn>
-                                    <TableHeaderColumn tooltip="Course Number">Course</TableHeaderColumn>
-                                    <TableHeaderColumn tooltip="Professor Name">Instructor</TableHeaderColumn>
+                                <TableRow >
+                                    <TableHeaderColumn style={{fontSize: 20}} tooltip="Course Term">Term</TableHeaderColumn>
+                                    <TableHeaderColumn style={{fontSize: 20}} tooltip="Course Number">Course</TableHeaderColumn>
+                                    <TableHeaderColumn style={{fontSize: 20}} tooltip="Professor Name">Instructor</TableHeaderColumn>
                                 </TableRow>
                             </TableHeader>
-                            <TableBody displayRowCheckbox={false}>
+                            <TableBody displayRowCheckbox={false} showRowHover={true}>
                                 {this.state.data.map(({term, course, instructor, selected}, index) => (
                                     <TableRow key={index} selected={selected}>
                                         <TableRowColumn>{(term && term.term ) || "N/A"}</TableRowColumn>

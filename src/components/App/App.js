@@ -47,9 +47,9 @@ class App extends Component {
     }
     getStyle(isOpen) {
         let style = isOpen ?
-            {width: 'calc(100% - 296px)', marginLeft: '256px'} :
-            {width: 'calc(100% - 40px)', marginLeft: 'initial'};
-        return Object.assign(style, styles.root);
+            {width: 'calc(100% - 256px)', marginLeft: '256px',color:"#B6862C", backgroundColor: this.state.color } :
+            {width: 'calc(100%)', marginLeft: 'initial',color:"#B6862C",backgroundColor: this.state.color };
+        return Object.assign(styles.root, style);
     }
 
     handleLogout(){
@@ -70,9 +70,9 @@ class App extends Component {
         return (
             <div className="App">
                 <AppBar
-                    style={{position: 'fixed'}} title="Recon"
+                    style={{position: 'fixed', backgroundColor: "#081E3F"}} title="ReconFIU"
                     onLeftIconButtonTouchTap={this.toggle.bind(this)}
-                    iconElementRight={<Link to="login"><FlatButton onClick={this.handleLogout} label="Logout" /></Link>}
+                    iconElementRight={<Link to="login"><FlatButton onClick={this.handleLogout} labelStyle={{color:"#DDDDDD"}} label="Logout" /></Link>}
                 />
                 <Sidenav open={this.state.open} docked={this.state.docked} onToggle={this.toggle.bind(this)}/>
                 <div style={this.state.style}>{this.props.children}</div>
