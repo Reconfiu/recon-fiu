@@ -52,7 +52,10 @@ export default class Login extends React.Component {
                 })
             }
         }).catch(e => {
-            console.log(e)
+            let { error : { message } } = e
+            this.setState({
+                message
+            })
         });
 
         event.preventDefault();
@@ -71,9 +74,13 @@ export default class Login extends React.Component {
                 browserHistory.push('/courses');
             }
         }).catch(e => {
-            let { statusCode } = e
-            if (statusCode === 409)
+            console.log(e)
+            let { error : { message, status } } = e
+            if (status === 409 && window.localStorage.getItem('user'))
                 browserHistory.push('/courses')
+            this.setState({
+                message
+            })
         });
         event.preventDefault();
     }
@@ -107,34 +114,34 @@ export default class Login extends React.Component {
     render() {
         const buttonStyle = { margin: 30, width: 200 };
         const textStyle = {
-            color: "#DDDDDD"
+            color: '#DDDDDD'
         };
         const loginPane = {
             width: 400,
-            backgroundColor: "#081E3F",
-            color: "#DDDDDD"
+            backgroundColor: '#081E3F',
+            color: '#DDDDDD'
         };
         const LoginButton = {
-            backgroundColor: "#B6862C",
-            color: "#DDDDDD"
+            backgroundColor: '#B6862C',
+            color: '#DDDDDD'
         };
         const InputStyle = {
-            color: "#DDDDDD"
+            color: '#DDDDDD'
         };
         return (
             <div className='login-wrapper' >
                 <Drawer open={true} containerStyle={loginPane} openSecondary={true}>
                     {
                         this.state.signUpActive &&
-                        <form onSubmit={this.handleLogin}>
-                            <div className='login-container'>
+                        <form onSubmit={this.handleLogin} className='form login-form'>
+                            <div className='form-group'>
                                 <TextField
                                     inputStyle={InputStyle}
                                     hintStyle={InputStyle}
                                     hintText='Email'
                                     value={this.state.loginUsername}
                                     onChange={this.logInUsernameChange}
-                                    errorText='This field is required'
+                                    errorText={this.state.message}
                                 /><br />
                                 <TextField
                                     inputStyle={InputStyle}
@@ -143,47 +150,43 @@ export default class Login extends React.Component {
                                     type='password'
                                     value={this.state.loginPassword}
                                     onChange={this.logInPasswordChange}
-                                    errorText='This field is required'
                                 /><br />
                                 <RaisedButton onClick={this.handleLogin} buttonStyle={LoginButton} label='LOGIN' primary={true}
                                     style={buttonStyle} />
-                                <div className='login-text' labelStyle={textStyle}>Don't have an account?<FlatButton
+                                <div className='login-text' labelStyle={textStyle}><h5>Don't have an account?</h5><FlatButton
                                     label='Register' primary={true}
                                     onClick={this.toggleSignUpLogin} />
                                 </div>
-                                <h4>{this.state.message}</h4>
                             </div>
                         </form>
-
                     }
                     {
                         !this.state.signUpActive &&
-                        <form onSubmit={this.handleSignUp}>
-                            <div className='login-container'>
+                        <form onSubmit={this.handleSignUp} className='form login-form'>
+                            <div className='form-group'>
                                 <TextField
                                     inputStyle={InputStyle}
                                     hintStyle={InputStyle}
-                                    hintText='Username/Email'
+                                    hintText='FIU - Email'
                                     value={this.state.loginUsername}
                                     onChange={this.signUpUsernameChange}
-                                    errorText='This field is required'
+                                    errorText={this.state.message}
                                 /><br />
                                 <TextField
                                     inputStyle={InputStyle}
                                     hintStyle={InputStyle}
-                                    type="password"
+                                    type='password'
                                     hintText='Create a password'
                                     value={this.state.loginPassword}
                                     onChange={this.signUpPasswordChange}
-                                    errorText='This field is required'
                                 /><br />
                                 <RaisedButton type='submit' label='SIGN UP' buttonStyle={LoginButton} primary={true} style={buttonStyle} />
-                                <div className='login-text' labelStyle={textStyle}>Already have an account?<FlatButton
+                                <div className='login-text' labelStyle={textStyle}><h5>Already have an account?</h5>
+                                    <FlatButton
                                     label='login' primary={true}
-                                    onClick={this.toggleSignUpLogin} />
+                                    onClick={this.toggleSignUpLogin}/>
                                 </div>
                                 {this.state.error && <div style={{ color: 'red' }}>{this.state.error}</div>}
-                                <h4>{this.state.message}</h4>
                             </div>
                         </form>
 

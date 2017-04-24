@@ -23,13 +23,13 @@ class Sidenav extends React.Component {
                 <MenuItem className='margin-top-xs' onClick={() => browserHistory.goBack()}><Link className='a-no-decor mouse-hover'>Back</Link></MenuItem>
                 <hr className='margin-top-xs'/>
                 <h4>Search History</h4>
-                {_.map(this.props.searchHistory, ({course, prof, term})=>
-                    <MenuItem><Link className='a-no-decor mouse-hover'>{ `${_.upperCase(course) || 'Any'} - ${_.capitalize(prof) || 'Any'} - ${term}` }</Link></MenuItem>
+                {_.map(this.props.searchHistory, ({course, prof, term}, i)=>
+                    <MenuItem key={i}><Link className='a-no-decor mouse-hover'>{ `${_.upperCase(course) || 'Any'} - ${_.capitalize(prof) || 'Any'} - ${term}` }</Link></MenuItem>
                 )}
                 <hr/>                
                 <h4>Course History</h4>
-                {_.map(this.props.courseHistory, ({course, instructor, term})=>
-                    <MenuItem><Link className='a-no-decor mouse-hover'>{ `${course.title} - ${term.term}` }</Link></MenuItem>
+                {_.map(this.props.courseHistory, ({course, instructor, term}, i)=>
+                    <MenuItem key={i}><Link className='a-no-decor mouse-hover'>{ `${course.title} - ${term.term}` }</Link></MenuItem>
                 )}
             </Drawer>
         );

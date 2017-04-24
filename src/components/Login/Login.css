@@ -2,11 +2,6 @@
 .Login {
     text-align: center;
 }
-.login-container{
-    margin-top: 100px;
-    margin-left: 50px;
-
-}
 
 .login-wrapper{
     height: 100vh;
@@ -18,6 +13,8 @@
     text-align: center;
 }
 
-.LoginPane{
-
+.login-form{
+    display: flex;
+    justify-content: center;
+    padding-top: 30%;
 }

@@ -63,7 +63,6 @@ export default class CourseDetail extends React.Component {
     }
     componentWillMount() {
         let courses = window.courses || JSON.parse(window.localStorage.getItem('data'))
-        console.log(courses)
         let courseData = _.result(courses, _.get(this, 'props.params.id'));  //todo: remove window access when moving to redux
         let comments = courseData.comments || []
         let chartData = _.mapValues(courseData.data, ((obj) => ({
