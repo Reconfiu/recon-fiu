@@ -96,9 +96,7 @@ export default class CourseList extends React.Component {
                 criteriaInstructorName: query.prof || ''
             })       
         }
-        
-        console.log(query)
-        
+                
         window.setTimeout(() => {
             let user = JSON.parse(window.sessionStorage.getItem('user'))
             if (user)

@@ -3,7 +3,7 @@ import AppBar from 'material-ui/AppBar';
 import FlatButton from 'material-ui/FlatButton';
 import '../../App.css';
 import { logout } from './../../shared/communications';
-import {Link, browserHistory} from "react-router";
+import { browserHistory} from "react-router";
 import Sidenav from '../Sidenav/Sidenav';
 import {styles} from './styles';
 import _ from "lodash"
@@ -100,7 +100,7 @@ class App extends Component {
                 <AppBar
                     style={{position: 'fixed', backgroundColor: "#081E3F"}} title="ReconFIU"
                     onLeftIconButtonTouchTap={this.toggle.bind(this)}
-                    iconElementRight={<Link to="login"><FlatButton onClick={this.handleLogout} labelStyle={{color:"#DDDDDD"}} label="Logout" /></Link>}
+                    iconElementRight={<FlatButton onClick={this.handleLogout} labelStyle={{color:"#DDDDDD"}} label="Logout" />}
                 />
                 <Sidenav open={this.state.open} searchHistory={this.state.searchHistory} courseHistory={this.state.courseHistory} docked={this.state.docked} onToggle={this.toggle.bind(this)}/>
                 <div style={this.state.style}>{this.getChildren()}</div>

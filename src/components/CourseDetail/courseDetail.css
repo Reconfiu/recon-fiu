@@ -1,7 +1,7 @@
 .course-info {
     text-align: left;
-    margin-top: 20px;
-    padding-right: 50px !important;
+    margin-top: 2%;
+    padding-left: 2%;
 }
 
 .course-info-line {
@@ -12,10 +12,20 @@
     text-align: left;
 }
 
-.comment {
-
+.assesment-charts {
+    padding-top: 1%;
+    margin-bottom: 2%;
+}
+.assesment-charts h4{
+    margin-left: 6%;
 }
 
+.assesment-charts .recharts-wrapper{
+    margin: auto auto;
+}
+.text-align-left{
+    text-align: left     
+}
 .comment-text {
     margin: 15px;
 }

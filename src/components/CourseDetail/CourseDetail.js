@@ -1,19 +1,38 @@
 import React from 'react';
-import { PieChart, Pie, Cell, Legend, Tooltip } from 'recharts';
+import {
+    PieChart,
+    Pie,
+    Cell,
+    Legend,
+    Tooltip,
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    BarChart,
+    Bar,
+    AreaChart,
+    Area
+} from 'recharts';
 import _ from 'lodash'
-import Divider from 'material-ui/Divider';
-import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
-import RaisedButton from 'material-ui/RaisedButton';
+import {
+    FlatButton,
+    RaisedButton,
+    Divider,
+    Dialog,
+    CardHeader,
+    IconButton
+} from 'material-ui';
+import AutoRenew from 'material-ui/svg-icons/action/autorenew'
 import TextField from 'material-ui/TextField';
 import './courseDetail.css';
 import { add_comment } from './../../shared/communications';
 import CircularProgress from 'material-ui/CircularProgress';
 import { browserHistory } from 'react-router';
 import Paper from 'material-ui/Paper';
-import { CardHeader, } from 'material-ui/Card';
 
-const colors = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#e50000', '#ffc952']
+const colors = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#e50000', '#1d799b']
 
 const legend = {
     E: 'Excellent',
@@ -23,6 +42,51 @@ const legend = {
     P: 'Poor',
     VG: 'Very Good'
 };
+let charts = [(data) =>
+        <BarChart width={400} height={300} data={data}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <XAxis dataKey="name" />
+            <YAxis />
+            <CartesianGrid strokeDasharray="3 3" />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="percent" fill="#8884d8" />
+        </BarChart>,
+    (data) =>
+        <PieChart width={500} height={300}>
+            <Pie
+                data={data}
+                cx={'50%'}
+                cy={'40%'}
+                outerRadius={60}
+                fill='#8884d8'
+                valueKey='percent'
+                label={({ percent }) => `${(percent).toFixed(0)}%`}>
+                {data.map((entry, index) => <Cell key={index} fill={colors[index % colors.length]} />)}
+            </Pie>
+            <Legend verticalAlign='bottom' align='left' height={36} />
+            <Tooltip />
+        </PieChart>,
+    (data) => 
+        <LineChart width={400} height={300} data={data}
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+            <XAxis dataKey="name" />
+            <YAxis />
+            <CartesianGrid strokeDasharray="3 3" />
+            <Tooltip />
+            <Legend />
+            <Line type="monotone" dataKey="percent" stroke="#8884d8" activeDot={{ r: 8 }} />
+        </LineChart>,
+    (data) => 
+        <AreaChart width={400} height={300} data={data}
+            margin={{top: 10, right: 30, left: 0, bottom: 0}}>
+        <XAxis dataKey="name"/>
+        <YAxis/>
+        <CartesianGrid strokeDasharray="3 3"/>
+        <Tooltip/>
+        <Area type='monotone' dataKey='percent' stroke='#8884d8' fill='#1d799b' />
+      </AreaChart>]
+
 
 export default class CourseDetail extends React.Component {
     constructor(props) {
@@ -36,16 +100,19 @@ export default class CourseDetail extends React.Component {
             let courses = window.courses || JSON.parse(window.localStorage.getItem('data'))
             let courseData = _.result(courses, this.props.params.id)
             let comments = courseData.comments || []
-            console.log(courseData.data)
-            let chartData = _.mapValues(courseData.data, ((obj) => ({
+            let i = 0
+            let overall = _.map(_.omit(_.get(courseData, 'data.OAOI'), 'question'), (y, x) => ({ name: legend[x], percent: parseInt(y.replace('%', ''), 10), fill: colors[++i % colors.length] }))
+            let chartData = _.mapValues(_.omit(courseData.data, 'OAOI'), (obj => ({
                 chartName: obj.question,
                 data: _.map(_.omit(obj, 'question'), ((y, x) => ({ name: legend[x], value: parseInt(y.replace('%', ''), 10) })))
             })));
             this.state = {
                 open: false,
                 loading: false,
+                current: 0,
                 chartData,
                 courseData,
+                overall,
                 newCommentText: '',
                 user,
                 comments,
@@ -61,28 +128,24 @@ export default class CourseDetail extends React.Component {
         this.addComment = this.addComment.bind(this);
         this.handleClose = this.handleClose.bind(this);
         this.handleOpen = this.handleOpen.bind(this);
-    }
-    componentWillMount() {
-        // let courses = window.courses || JSON.parse(window.localStorage.getItem('data'))
-        // let courseData = _.result(courses, _.get(this, 'props.params.id'));  //todo: remove window access when moving to redux
-        // let comments = courseData.comments || []
-        // let chartData = _.mapValues(courseData.data, ((obj) => ({
-        //     chartName: obj.question,
-        //     data: _.map(_.omit(obj, 'question'), ((y, x) => ({ name: legend[x], value: parseInt(y.replace('%', ''), 10) })))
-        // })));
-        // console.log(chartData)
-        // this.state = ({
-        //     open: false,
-        //     loading: false,
-        //     chartData,
-        //     courseData,
-        //     newCommentText: '',
-        //     comments
-        // });
+        this.switchChart = this.switchChart.bind(this)
+        this.autoSwitch = this.autoSwitch.bind(this)
+        this.autoSwitch()
     }
 
     handleNewCommentTextChange(event) {
         this.setState({ newCommentText: event.target.value });
+    }
+
+    autoSwitch() {
+        this.timeout = window.setTimeout(()=>{
+            this.switchChart()
+            this.autoSwitch()
+        }, 1000*12)
+    } 
+
+    componentWillUnmount(){
+        window.clearTimeout(this.timeout)
     }
 
     addComment() {
@@ -95,7 +158,6 @@ export default class CourseDetail extends React.Component {
             };
             this.setState({ loading: true });
             add_comment(body).then((resp) => {
-                console.log(resp)
                 let { status } = resp
                 if (status === 200) {
                     comments.push(body);
@@ -109,15 +171,20 @@ export default class CourseDetail extends React.Component {
     }
 
     handleOpen() {
-        console.log(this)
         this.setState({ open: true });
     }
 
     handleClose() {
-        console.log(this)
         this.setState({ open: false });
     }
 
+    switchChart() {
+        this.setState({
+            current: (this.state.current+1) % charts.length
+        })
+    }
+
+    
 
     render() {
         let { courseData, chartData } = this.state
@@ -130,31 +197,34 @@ export default class CourseDetail extends React.Component {
         return (
             <Paper style={{ height: '90vh', margin: '0 0px 0px', overflowY: 'scroll' }} zDepth={2} className='course-detail-container row'>
                 <div className='col-xs-12'>
-                    <div className='col-xs-8 course-info'>
+                    <div className='col-xs-6 course-info'>
                         <h3>{`${courseData.course.number || ''} - ${courseData.course.title || ''}`}</h3>
-                        <Divider className='col-xs-4' />
+                        <Divider className='col-xs-6' />
                         <div className='course-info-line'>
                             <i>Instructor name: </i>
                             <b>{courseData.instructor.name || ''}</b>
                         </div>
-                        <Divider className='col-xs-4' />
+                        <Divider className='col-xs-6' />
                         <div className='course-info-line'>
                             <i>Term: </i>
                             <b>{courseData.term.term || ''}</b>
                         </div>
-                        <Divider className='col-xs-4' />
+                        <Divider className='col-xs-6' />
                         <div className='course-info-line'>
                             <i>Number of enrolled students: </i>
                             <b>{courseData.meta.enrolled || ''}</b>
                         </div>
-                        <Divider className='col-xs-4' />
+                        <Divider className='col-xs-6' />
                         <div className='course-info-line'>
                             <i>Section: </i>
                             <b>{courseData.course.section || ''}</b>
                         </div>
-                        <Divider className='col-xs-4' />
+                        <Divider className='col-xs-6' />
                     </div>
-
+                    <div className='col-xs-6 assesment-charts'>
+                        <h4>Overal Assesment <IconButton onClick={this.switchChart} labelStyle={{ color: "#081e3f" }} tooltip="Switch Graph"><AutoRenew /></IconButton> </h4>
+                        {charts[this.state.current](this.state.overall)}
+                    </div>
                     {_.map(chartData, ({ chartName, data }) => (
                         <div key={chartName} className='col-xs-4'>
                             <CardHeader title={chartName} />
@@ -165,14 +235,11 @@ export default class CourseDetail extends React.Component {
                                     cy={'40%'}
                                     outerRadius={60}
                                     fill='#8884d8'
-                                    label={({ cx, cy, midAngle, innerRadius, outerRadius, percent, index })=>`${(percent * 100).toFixed(0)}%`}
-                                >
-                                    {
-                                        data.map((entry, index) => <Cell fill={colors[index % colors.length]} />)
-                                    }
+                                    label={({ percent }) => `${(percent * 100).toFixed(0)}%`} >
+                                    { data.map((entry, index) => <Cell key={index} fill={colors[index % colors.length]} />) }
                                 </Pie>
-                                <Legend verticalAlign='top' align='left' layout='vertical' height={36}/>
-                                <Tooltip/>
+                                <Legend verticalAlign='top' align='left' layout='vertical' height={36} />
+                                <Tooltip />
                             </PieChart>
                         </div>
                     ))}
