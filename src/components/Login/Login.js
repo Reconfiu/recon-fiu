@@ -3,7 +3,6 @@ import Drawer from 'material-ui/Drawer';
 import TextField from 'material-ui/TextField';
 import './Login.css';
 import RaisedButton from 'material-ui/RaisedButton';
-// import {Link} from 'react-router';
 import FlatButton from 'material-ui/FlatButton';
 import { login, signUp } from './../../shared/communications';
 import { browserHistory } from 'react-router';
