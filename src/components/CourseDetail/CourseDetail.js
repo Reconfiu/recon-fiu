@@ -13,6 +13,10 @@ import { browserHistory } from 'react-router';
 import Paper from 'material-ui/Paper';
 import { CardHeader, } from 'material-ui/Card';
 
+const color = [
+  "#e1eef6","#ff5f2e","#fcbe32","#004e66","#ff7473","#ffc952","#47b8e0",
+  "#34314c","#47b8e0","#47b8e0",
+]
 
 const legend = {
     E: 'Excellent',

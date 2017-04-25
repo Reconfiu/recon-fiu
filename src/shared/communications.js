@@ -1,5 +1,5 @@
 import promise from "request-promise"
-import { BASE_URL } from './constants'
+import { BASE_URL } from './config'
 var r_promise = promise.defaults({ jar: true })
 
 
