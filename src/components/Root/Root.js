@@ -30,6 +30,8 @@ export default class Root extends React.Component {
                         <Route path={'courses'} component={CourseList}/>
                         <Route path={'courses/:id'} component={CourseDetail}/>
                     </Route>
+                    <Route path={'*'} component={Login}/>
+                    <Redirect from="*" to="/login" />
                 </Router>
             </MuiThemeProvider>
         );
