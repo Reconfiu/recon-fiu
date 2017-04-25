@@ -76,7 +76,7 @@ export default class Login extends React.Component {
         }).catch(e => {
             console.log(e)
             let { error : { message, status } } = e
-            if (status === 409 && window.sessionStorage.getItem('user'))
+            if (status === 409)
                 browserHistory.push('/courses')
             this.setState({
                 message
