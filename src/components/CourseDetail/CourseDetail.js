@@ -2,7 +2,6 @@ import React from 'react';
 import {
     PieChart,
     Pie,
-    Cell,
     Legend,
     Tooltip,
     LineChart,
@@ -32,79 +31,90 @@ import CircularProgress from 'material-ui/CircularProgress';
 import { browserHistory } from 'react-router';
 import Paper from 'material-ui/Paper';
 
-const colors = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#e50000', '#1d799b']
-
 const legend = {
-    E: 'Excellent',
-    F: 'Fair',
-    G: 'Good',
-    NR: 'No Response',
-    P: 'Poor',
-    VG: 'Very Good'
+    E: {
+        label: 'Excellent',
+        color: '#00C49F'
+    },
+    F: {
+        label: 'Fair',
+        color: '#FF8042'
+    },
+    G: {
+        label: 'Good',
+        color: '#1d799b'
+    },
+    NR: {
+        label: 'No Response',
+        color: '#e50000'
+    },
+    P: {
+        label: 'Poor',
+        color: '#FFBB28'
+    },
+    VG: {
+        label: 'Very Good',
+        color: '#0088FE'
+    }
 };
 let charts = [(data) =>
-        <BarChart width={400} height={300} data={data}
-            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-            <XAxis dataKey="name" />
-            <YAxis />
-            <CartesianGrid strokeDasharray="3 3" />
-            <Tooltip />
-            <Legend />
-            <Bar dataKey="percent" fill="#8884d8" />
-        </BarChart>,
-    (data) =>
-        <PieChart width={500} height={300}>
-            <Pie
-                data={data}
-                cx={'50%'}
-                cy={'40%'}
-                outerRadius={60}
-                fill='#8884d8'
-                valueKey='percent'
-                label={({ percent }) => `${(percent).toFixed(0)}%`}>
-                {data.map((entry, index) => <Cell key={index} fill={colors[index % colors.length]} />)}
-            </Pie>
-            <Legend verticalAlign='bottom' align='left' height={36} />
-            <Tooltip />
-        </PieChart>,
-    (data) => 
-        <LineChart width={400} height={300} data={data}
-            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-            <XAxis dataKey="name" />
-            <YAxis />
-            <CartesianGrid strokeDasharray="3 3" />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="percent" stroke="#8884d8" activeDot={{ r: 8 }} />
-        </LineChart>,
-    (data) => 
-        <AreaChart width={400} height={300} data={data}
-            margin={{top: 10, right: 30, left: 0, bottom: 0}}>
-        <XAxis dataKey="name"/>
-        <YAxis/>
-        <CartesianGrid strokeDasharray="3 3"/>
-        <Tooltip/>
-        <Area type='monotone' dataKey='percent' stroke='#8884d8' fill='#1d799b' />
-      </AreaChart>]
+    <BarChart width={400} height={300} data={data}
+        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+        <XAxis dataKey="name" />
+        <YAxis />
+        <CartesianGrid strokeDasharray="3 3" />
+        <Tooltip />
+        <Bar dataKey="percent" fill="#8884d8" />
+    </BarChart>,
+(data) =>
+    <PieChart width={500} height={300}>
+        <Pie
+            data={data}
+            cx={'50%'}
+            cy={'40%'}
+            outerRadius={60}
+            fill='#8884d8'
+            valueKey='percent'
+            label={({ percent }) => `${(percent).toFixed(0)}%`}>
+        </Pie>
+        <Legend verticalAlign='bottom' align='left' height={36} />
+        <Tooltip />
+    </PieChart>,
+(data) =>
+    <LineChart width={400} height={300} data={data}
+        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+        <XAxis dataKey="name" />
+        <YAxis />
+        <CartesianGrid strokeDasharray="3 3" />
+        <Tooltip />
+        <Legend />
+        <Line type="monotone" dataKey="percent" stroke='#FF8042' activeDot={{ r: 8 }} />
+    </LineChart>,
+(data) =>
+    <AreaChart width={400} height={300} data={data}
+        margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+        <XAxis dataKey="name" />
+        <YAxis />
+        <CartesianGrid strokeDasharray="3 3" />
+        <Tooltip />
+        <Area type='monotone' dataKey='percent' stroke='#FF8042' fill='#FF8042' />
+    </AreaChart>]
 
 
 export default class CourseDetail extends React.Component {
     constructor(props) {
         super(props);
         let user = JSON.parse(window.sessionStorage.getItem('user'))
-
         if (!user) {
             browserHistory.push('/login')
         }
         else {
-            let courses = window.courses || JSON.parse(window.localStorage.getItem('data'))
-            let courseData = _.result(courses, this.props.params.id)
+            let courseData = window.course || JSON.parse(window.localStorage.getItem('course'))
             let comments = courseData.comments || []
-            let i = 0
-            let overall = _.map(_.omit(_.get(courseData, 'data.OAOI'), 'question'), (y, x) => ({ name: legend[x], percent: parseInt(y.replace('%', ''), 10), fill: colors[++i % colors.length] }))
+            let overall = _.map(_.omit(_.get(courseData, 'data.OAOI'), 'question'), (y, x) => ({ name: legend[x].label, percent: parseInt(y.replace('%', ''), 10), fill: legend[x].color }))
             let chartData = _.mapValues(_.omit(courseData.data, 'OAOI'), (obj => ({
                 chartName: obj.question,
-                data: _.map(_.omit(obj, 'question'), ((y, x) => ({ name: legend[x], value: parseInt(y.replace('%', ''), 10) })))
+                data: _.map(_.omit(obj, 'question'), ((y, x) => ({ name: legend[x].label, value: parseInt(y.replace('%', ''), 10), fill: legend[x].color })))
             })));
             this.state = {
                 open: false,
@@ -123,7 +133,6 @@ export default class CourseDetail extends React.Component {
         }
 
 
-
         this.handleNewCommentTextChange = this.handleNewCommentTextChange.bind(this);
         this.addComment = this.addComment.bind(this);
         this.handleClose = this.handleClose.bind(this);
@@ -133,18 +142,37 @@ export default class CourseDetail extends React.Component {
         this.autoSwitch()
     }
 
+    componentWillReceiveProps() {
+        let courseData = window.course || JSON.parse(window.localStorage.getItem('course'))
+        let comments = courseData.comments || []
+        let overall = _.map(_.omit(_.get(courseData, 'data.OAOI'), 'question'), (y, x) => ({ name: legend[x].label, percent: parseInt(y.replace('%', ''), 10), fill: legend[x].color }))
+        console.log(courseData.data)
+        let chartData = _.mapValues(_.omit(courseData.data, 'OAOI'), (obj => ({
+            chartName: obj.question,
+            data: _.map(_.omit(obj, 'question'), ((y, x) => ({ name: legend[x].label, value: parseInt(y.replace('%', ''), 10), fill: legend[x].color })))
+        })));
+        this.setState({
+            chartData,
+            comments,
+            currrent: 0,
+            courseData,
+            overall,
+            newCommentText: ''
+        })
+    }
+
     handleNewCommentTextChange(event) {
         this.setState({ newCommentText: event.target.value });
     }
 
     autoSwitch() {
-        this.timeout = window.setTimeout(()=>{
+        this.timeout = window.setTimeout(() => {
             this.switchChart()
             this.autoSwitch()
-        }, 1000*12)
-    } 
+        }, 1000 * 12)
+    }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         window.clearTimeout(this.timeout)
     }
 
@@ -180,11 +208,11 @@ export default class CourseDetail extends React.Component {
 
     switchChart() {
         this.setState({
-            current: (this.state.current+1) % charts.length
+            current: (this.state.current + 1) % charts.length
         })
     }
 
-    
+
 
     render() {
         let { courseData, chartData } = this.state
@@ -235,9 +263,7 @@ export default class CourseDetail extends React.Component {
                                     cy={'40%'}
                                     outerRadius={60}
                                     fill='#8884d8'
-                                    label={({ percent }) => `${(percent * 100).toFixed(0)}%`} >
-                                    { data.map((entry, index) => <Cell key={index} fill={colors[index % colors.length]} />) }
-                                </Pie>
+                                    label={({ percent }) => `${(percent * 100).toFixed(0)}%`} />
                                 <Legend verticalAlign='top' align='left' layout='vertical' height={36} />
                                 <Tooltip />
                             </PieChart>

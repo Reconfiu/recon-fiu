@@ -15,6 +15,7 @@ class App extends Component {
         this.state = {open: true, docked: false, searchHistory:[], courseHistory: [] };
         this.updateSearchHistory = this.updateSearchHistory.bind(this)   
         this.updateCourseHistory = this.updateCourseHistory.bind(this)
+        this.updateSearch = this.updateSearch.bind(this)
         this.getChildren = this.getChildren.bind(this)
     }
     getChildren(){
@@ -22,6 +23,7 @@ class App extends Component {
         let props = _.clone(children.props)
         props.updateSearchHistory = this.updateSearchHistory
         props.updateCourseHistory = this.updateCourseHistory
+        props.query = this.state.query
         children.props = props
         return children
     }
@@ -94,6 +96,13 @@ class App extends Component {
         }
     }
 
+    updateSearch(query){
+        window.localStorage.setItem('query', JSON.stringify(query))
+        this.setState({
+            query
+        })
+    }
+
     render() {
         return (
             <div className="App">
@@ -102,7 +111,7 @@ class App extends Component {
                     onLeftIconButtonTouchTap={this.toggle.bind(this)}
                     iconElementRight={<FlatButton onClick={this.handleLogout} labelStyle={{color:"#DDDDDD"}} label="Logout" />}
                 />
-                <Sidenav open={this.state.open} searchHistory={this.state.searchHistory} courseHistory={this.state.courseHistory} docked={this.state.docked} onToggle={this.toggle.bind(this)}/>
+                <Sidenav open={this.state.open} updateSearch={this.updateSearch} searchHistory={this.state.searchHistory} courseHistory={this.state.courseHistory} docked={this.state.docked} onToggle={this.toggle.bind(this)}/>
                 <div style={this.state.style}>{this.getChildren()}</div>
             </div>
         );

@@ -9,6 +9,17 @@ import './Sidenav.css';
 import _ from 'lodash'
 
 class Sidenav extends React.Component {
+
+    constructor(props){
+        super(props)
+        this.goToCourse = this.goToCourse.bind(this)
+    }
+    goToCourse(i, id){
+        let course = this.props.courseHistory[i]
+        window.localStorage.setItem('course', JSON.stringify(course))
+        window.course = course
+        browserHistory.push(`/courses/${id}`)
+    }
     render() {
         return (
             <Drawer
@@ -21,15 +32,17 @@ class Sidenav extends React.Component {
                     onLeftIconButtonTouchTap={this.props.onToggle}
                 />
                 <MenuItem className='margin-top-xs' onClick={() => browserHistory.goBack()}><Link className='a-no-decor mouse-hover'>Back</Link></MenuItem>
-                <hr className='margin-top-xs'/>
+                <hr className='margin-top-xs margin-bottom-xs'/>
+                <MenuItem className='margin-top-xs' onClick={() => { this.props.updateSearch({course: '', prof: '', term: 'All'}); browserHistory.push('/coures')}}><Link className='a-no-decor mouse-hover'>New Search</Link></MenuItem>
+                <hr className='margin-top-xs margin-bottom-xs'/>                
                 <h4>Search History</h4>
                 {_.map(this.props.searchHistory, ({course, prof, term}, i)=>
-                    <MenuItem key={i}><Link className='a-no-decor mouse-hover'>{ `${_.upperCase(course) || 'Any'} - ${_.capitalize(prof) || 'Any'} - ${term}` }</Link></MenuItem>
+                    <MenuItem onClick={()=>{this.props.updateSearch({course, prof, term}); browserHistory.push('/courses')}} key={i}><Link className='a-no-decor mouse-hover'>{ `${_.upperCase(course) || 'Any'} - ${_.capitalize(prof) || 'Any'} - ${term}` }</Link></MenuItem>
                 )}
                 <hr/>                
                 <h4>Course History</h4>
-                {_.map(this.props.courseHistory, ({course, instructor, term}, i)=>
-                    <MenuItem key={i}><Link className='a-no-decor mouse-hover'>{ `${course.title} - ${term.term}` }</Link></MenuItem>
+                {_.map(this.props.courseHistory, ({course, instructor, term, _id}, i)=>
+                    <MenuItem onClick={()=>this.goToCourse(i, _id.$oid)}  key={i}><Link className='a-no-decor mouse-hover'>{ `${course.title} - ${term.term}` }</Link></MenuItem>
                 )}
             </Drawer>
         );

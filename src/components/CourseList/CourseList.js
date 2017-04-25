@@ -51,6 +51,19 @@ export default class CourseList extends React.Component {
         this.getCourseDetails = this.getCourseDetails.bind(this);
     }
 
+    componentWillReceiveProps({query}){
+        console.log(query)
+        if (!query)
+            query = JSON.parse(window.localStorage.getItem('query'))
+        
+        this.setState({
+            criteriaCourseNumber: query.course,
+            criteriaInstructorName: query.prof,
+            criteriaTermName: query.term
+        })
+        this.getData(query)
+    }
+
     populateSearch() {
         let criteria = {
             term: this.state.criteriaTermName,
@@ -67,15 +80,12 @@ export default class CourseList extends React.Component {
      */
     getData(query) {
         this.setState({ loading: true });
-        window.localStorage.removeItem('data')
         window.localStorage.setItem('query', JSON.stringify(query))
         searchBy(query).then(resp => {
             let { data, status } = resp
             if (status === 200) {
                 // Take p-first 50 records. Todo: add pagination
                 let result = _.map(data, JSON.parse)
-                window.courses = result; //todo: remove window access when moving to redux
-                window.localStorage.setItem('data', JSON.stringify(result))
                 this.setState({ data: result, loading: false });
             }
         }).catch(e => {
@@ -117,8 +127,11 @@ export default class CourseList extends React.Component {
     }
 
     getCourseDetails(rowNumber) {
-        this.props.updateCourseHistory(this.state.data[rowNumber])
-        browserHistory.push('/courses/' + rowNumber);
+        let data = this.state.data[rowNumber]
+        window.localStorage.setItem('course', JSON.stringify(data))
+        this.props.updateCourseHistory(data)
+        window.course = data
+        browserHistory.push('/courses/' + data._id.$oid);
     }
 
 
