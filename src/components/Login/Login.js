@@ -52,7 +52,7 @@ export default class Login extends React.Component {
                 })
             }
         }).catch(e => {
-            let { error : { message } } = e
+            let { error: { message } } = e
             this.setState({
                 message
             })
@@ -75,12 +75,16 @@ export default class Login extends React.Component {
             }
         }).catch(e => {
             console.log(e)
-            let { error : { message, status } } = e
+            let { error: { message, status } } = e
+
             if (status === 409)
-                browserHistory.push('/courses')
+                if (window.sessionStorage.getItem('user'))
+                    browserHistory.push('/courses')
+                    
             this.setState({
                 message
             })
+
         });
         event.preventDefault();
     }
@@ -183,8 +187,8 @@ export default class Login extends React.Component {
                                 <RaisedButton type='submit' label='SIGN UP' buttonStyle={LoginButton} primary={true} style={buttonStyle} />
                                 <div className='login-text' labelStyle={textStyle}><h5>Already have an account?</h5>
                                     <FlatButton
-                                    label='login' primary={true}
-                                    onClick={this.toggleSignUpLogin}/>
+                                        label='login' primary={true}
+                                        onClick={this.toggleSignUpLogin} />
                                 </div>
                                 {this.state.error && <div style={{ color: 'red' }}>{this.state.error}</div>}
                             </div>
