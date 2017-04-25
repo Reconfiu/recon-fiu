@@ -65,14 +65,13 @@ class App extends Component {
     }
 
     handleLogout(){
+      
         logout().then(resp => {
             console.log(resp)
             let { status } = resp
-            if (status === 200) {
-                window.sessionStorage.clear()   
-                window.localStorage.clear()
-                browserHistory.push("/login")             
-            }
+            browserHistory.push("/login")   
+            window.sessionStorage.clear()   
+            window.localStorage.clear()          
         }).catch(e=>{
             console.log(e)
         });
