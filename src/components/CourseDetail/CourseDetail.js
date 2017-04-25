@@ -55,7 +55,6 @@ export default class CourseDetail extends React.Component {
 
 
 
-        this.getArrayAve = this.getArrayAve.bind(this);
         this.handleNewCommentTextChange = this.handleNewCommentTextChange.bind(this);
         this.addComment = this.addComment.bind(this);
         this.handleClose = this.handleClose.bind(this);
@@ -116,13 +115,6 @@ export default class CourseDetail extends React.Component {
         this.setState({ open: false });
     }
 
-    getArrayAve(arrayX) {
-        let total = 0;
-        for (let i = 0; i < arrayX.length; i++) {
-            total += arrayX[i];
-        }
-        return total / arrayX.length;
-    }
 
     render() {
         let { courseData, chartData } = this.state
