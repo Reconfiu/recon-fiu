@@ -76,12 +76,13 @@ class App extends Component {
         });
     }
     
-    updateSearchHistory(criteria){
+    updateSearchHistory(query){
         let { searchHistory }= this.state
-        if (!_.find(searchHistory, criteria)){
-            searchHistory.push(criteria)
+        if (!_.find(searchHistory, query)){
+            searchHistory.push(query)
             this.setState({
-                searchHistory
+                searchHistory,
+                query
             })
         }
     }
